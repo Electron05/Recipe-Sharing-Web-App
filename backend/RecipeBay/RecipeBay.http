@@ -1,0 +1,6 @@
+@RecipeBay_HostAddress = http://localhost:5272
+
+GET {{RecipeBay_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

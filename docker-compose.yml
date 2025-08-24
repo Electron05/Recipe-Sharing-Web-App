@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:15
+    container_name: recipebay-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: recipebay
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data # persist DB data
+
+  backend:
+    build:
+      context: ./backend/RecipeBay
+    container_name: recipebay-backend
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=db;Database=recipebay;Username=postgres;Password=${DB_PASSWORD}"
+      ASPNETCORE_URLS: "http://+:5272"
+    ports:
+      - "5000:5272"
+
+  frontend:
+    build:
+      context: ./frontend/RecipeBayFrontend
+    container_name: recipebay-frontend
+    depends_on:
+      - backend
+    ports:
+      - "4200:4200"
+
+volumes:
+  db_data:

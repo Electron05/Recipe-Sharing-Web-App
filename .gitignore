@@ -1,0 +1,14 @@
+# .NET BACKEND
+
+[Bb]in/
+[Oo]bj/
+
+# ANGULAR FRONTEND
+
+.angular/
+node_modules/
+
+
+# Visual Studio Code
+.vscode/
+.env

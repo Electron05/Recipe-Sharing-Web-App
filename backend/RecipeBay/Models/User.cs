@@ -17,8 +17,9 @@ namespace RecipeBay.Models
         [MaxLength(100)]
         public required string Email { get; set; }
 
+        // Nullable because user is created in mapper, PasswordHash and CreatedAt are set in controller
         [Required]
-        public required string PasswordHash { get; set; }
+        public string? PasswordHash { get; set; }
 
         public DateTime CreatedAt { get; set; }
 

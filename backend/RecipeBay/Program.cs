@@ -1,11 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using RecipeBay.Data;
 using Npgsql;
+using RecipeBay.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Custom NpgsqlDataSource to properly enable json List mapping
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(

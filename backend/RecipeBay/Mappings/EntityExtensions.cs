@@ -1,6 +1,8 @@
 using RecipeBay.Models;
 using RecipeBay.DTOs;
 using BCrypt.Net;
+using Microsoft.AspNetCore.Identity;
+
 
 namespace RecipeBay.Mappings
 {
@@ -62,14 +64,12 @@ namespace RecipeBay.Mappings
 
 
 		// UserProfileDtoCreate → User
-		public static User ToEntity(this UserProfileDtoCreate dto)
+		public static User ToEntity(this RegisterDto dto)
 		{
 			return new User
 			{
 				Username = dto.Username,
 				Email = dto.Email,
-				PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-				CreatedAt = DateTime.UtcNow
 			};
 		}
 	}

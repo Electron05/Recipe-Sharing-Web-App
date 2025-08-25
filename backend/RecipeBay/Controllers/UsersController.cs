@@ -42,16 +42,6 @@ namespace RecipeBay.Controllers
             return Ok(user);
         }
 
-        // POST create user
-        [HttpPost]
-        public async Task<ActionResult<UserProfileDtoPage>> CreateUser(UserProfileDtoCreate dto)
-        {
-            var user = dto.ToEntity();
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user.ToDtoPage());
-        }
+        //CreateUser in Auth
     }
 }

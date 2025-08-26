@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RecipeBay.Models;
+using Microsoft.AspNetCore.Authorization;
+
 using RecipeBay.Data;
 using RecipeBay.DTOs;
 using RecipeBay.Mappings;
@@ -41,6 +42,7 @@ namespace RecipeBay.Controllers
             return Ok(recipe);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<RecipeDtoCreate>> CreateRecipe(RecipeDtoCreate dto)
         {

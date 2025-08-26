@@ -21,8 +21,6 @@ namespace RecipeBay.DTOs
 		public required byte TimeToPrepareHours { get; set; }
 		[Required]
 		public required bool TimeToPrepareLongerThan1Day { get; set; }
-		[Required]
-		public int AuthorId { get; set; }
 	}
 
 }

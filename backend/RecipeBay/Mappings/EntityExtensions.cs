@@ -43,7 +43,6 @@ namespace RecipeBay.Mappings
 				TimeToPrepareMinutes = dto.TimeToPrepareMinutes,
 				TimeToPrepareHours = dto.TimeToPrepareHours,
 				TimeToPrepareLongerThan1Day = dto.TimeToPrepareLongerThan1Day,
-				AuthorId = dto.AuthorId,
 			};
 		}
 

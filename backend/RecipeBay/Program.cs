@@ -25,7 +25,8 @@ app.Run();
 static void ConfigureAuthentication(WebApplicationBuilder builder)
 {
     var jwtSettings = builder.Configuration.GetSection("Jwt");
-    var key = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY") ?? string.Empty);
+    var key = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY")
+    ?? throw new InvalidOperationException("JWT_KEY environment variable is not set. Go to .env and set at least 32-char long key."));
 
     builder.Services.AddAuthentication(options =>
     {
@@ -44,15 +45,47 @@ static void ConfigureAuthentication(WebApplicationBuilder builder)
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(key)
         };
+        options.MapInboundClaims = false; // To prevent claim type mapping ("sub" to ClaimTypes.NameIdentifier)
     });
 }
 
+
+
 static void ConfigureServices(WebApplicationBuilder builder)
 {
+
     builder.Services.AddControllers();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
+
+    // https://stackoverflow.com/questions/43447688/setting-up-swagger-asp-net-core-using-the-authorization-headers-bearer
+    builder.Services.AddSwaggerGen(c =>
+    {
+        c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+            Scheme = "Bearer",
+            BearerFormat = "JWT",
+            In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+            Description = "Enter 'Bearer <token>'"
+        });
+
+        c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+        {
+            {
+                new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                    {
+                        Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+    });
 }
 
 static void ConfigureDatabase(WebApplicationBuilder builder)
@@ -95,6 +128,9 @@ static void ConfigureMiddleware(WebApplication app)
         app.UseSwagger();
         app.UseSwaggerUI();
     }
+
+    app.UseAuthentication();
+    app.UseAuthorization();
 
     app.UseHttpsRedirection();
     app.MapControllers();

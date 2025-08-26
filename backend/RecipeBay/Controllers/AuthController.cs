@@ -29,7 +29,6 @@ namespace RecipeBay.Controllers
 			return Ok(new { token });
 		}
 
-		// POST create user
 		[HttpPost("register")]
 		public async Task<ActionResult<UserProfileDtoPage>> Register(RegisterDto dto)
 		{

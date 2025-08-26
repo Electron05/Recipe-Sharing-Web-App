@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using RecipeBay.Data;
 using RecipeBay.DTOs;
 using RecipeBay.Mappings;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace RecipeBay.Controllers
 {
@@ -46,16 +48,27 @@ namespace RecipeBay.Controllers
         [HttpPost]
         public async Task<ActionResult<RecipeDtoCreate>> CreateRecipe(RecipeDtoCreate dto)
         {
-            var author = await _context.Users.FindAsync(dto.AuthorId);
+
+            var userIdString = HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+
+            if (userIdString == null)
+            {
+                return Unauthorized("User ID claim not found.");
+            }
+
+            int userId = int.Parse(userIdString);
+
+            var author = await _context.Users.FindAsync(userId);
             if (author == null)
             {
-                return BadRequest("Author not found.");
+                return BadRequest("Author with ID from claim not found.");
             }
 
             var recipe = dto.ToEntity();
             
             recipe.CreatedAt = DateTime.UtcNow;
             recipe.Author = author;
+            recipe.AuthorId = userId;
             recipe.Likes = 0;
 
             _context.Recipes.Add(recipe);

@@ -36,7 +36,8 @@ namespace RecipeBay.Services
             var jwtSettings = _config.GetSection("Jwt");
         
             #pragma warning disable CS8604
-            var key = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY") ?? string.Empty);
+            var key = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY")
+            ?? throw new InvalidOperationException("JWT_KEY environment variable is not set. Go to .env and set at least 32-char long key."));
 
 
             var claims = new[]{

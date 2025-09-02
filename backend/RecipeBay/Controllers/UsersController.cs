@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RecipeBay.Models;
 using RecipeBay.Data;
 using RecipeBay.DTOs;
 using RecipeBay.Mappings;
@@ -20,10 +19,10 @@ namespace RecipeBay.Controllers
 
         // GET all users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserProfileDtoPage>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserProfileDtoDisplay>>> GetUsers()
         {
             var users = await _context.Users
-                .Select(u => u.ToDtoPage())
+                .Select(u => u.ToDtoDisplay())
                 .ToListAsync();
 
             return Ok(users);
@@ -31,11 +30,11 @@ namespace RecipeBay.Controllers
 
         // GET single user by id
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserProfileDtoPage>> GetUser(int id)
+        public async Task<ActionResult<UserProfileDtoDisplay>> GetUser(int id)
         {
             var user = await _context.Users
                 .Where(u => u.Id == id)
-                .Select(u => u.ToDtoPage())
+                .Select(u => u.ToDtoDisplay())
                 .FirstOrDefaultAsync();
 
             if (user == null) return NotFound();

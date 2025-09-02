@@ -12,7 +12,6 @@ namespace RecipeBay.DTOs
 		public required string Password { get; set; }
 		[Required]
 		public required string ConfirmPassword { get; set; }
-
 	}
 
 }

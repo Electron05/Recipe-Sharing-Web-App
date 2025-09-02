@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using RecipeBay.Data;
 using RecipeBay.DTOs;
 using RecipeBay.Mappings;
+using RecipeBay.Models;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -22,21 +23,21 @@ namespace RecipeBay.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RecipeDtoPage>>> GetRecipes()
+        public async Task<ActionResult<IEnumerable<RecipeDtoDisplay>>> GetRecipes()
         {
             var recipes = await _context.Recipes
-                .Select(r => r.ToDtoPage())
+                .Select(r => r.ToDtoDisplay())
                 .ToListAsync();
 
             return Ok(recipes);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<RecipeDtoPage>> GetRecipe(int id)
+        public async Task<ActionResult<RecipeDtoDisplay>> GetRecipe(int id)
         {
             var recipe = await _context.Recipes
                 .Where(r => r.Id == id)
-                .Select(r => r.ToDtoPage())
+                .Select(r => r.ToDtoDisplay())
                 .FirstOrDefaultAsync();
 
             if (recipe == null) return NotFound();
@@ -56,20 +57,25 @@ namespace RecipeBay.Controllers
                 return Unauthorized("User ID claim not found.");
             }
 
-            int userId = int.Parse(userIdString);
+            int authorId = int.Parse(userIdString);
 
-            var author = await _context.Users.FindAsync(userId);
+            var author = await _context.Users.FindAsync(authorId);
             if (author == null)
             {
                 return BadRequest("Author with ID from claim not found.");
             }
 
-            var recipe = dto.ToEntity();
-            
-            recipe.CreatedAt = DateTime.UtcNow;
-            recipe.Author = author;
-            recipe.AuthorId = userId;
-            recipe.Likes = 0;
+            var recipe = new Recipe
+            {
+                Title = dto.Title,
+                Description = dto.Description,
+                Ingredients = dto.Ingredients,
+                Steps = dto.Steps,
+                CreatedAt = DateTime.UtcNow,
+                AuthorId = authorId,
+                Author = author,
+                Likes = 0
+            };
 
             _context.Recipes.Add(recipe);
             await _context.SaveChangesAsync();
@@ -77,7 +83,7 @@ namespace RecipeBay.Controllers
             return CreatedAtAction(
                 nameof(GetRecipe),
                 new { id = recipe.Id },
-                recipe.ToDtoPage()
+                recipe.ToDtoDisplay()
             );
         }
     }

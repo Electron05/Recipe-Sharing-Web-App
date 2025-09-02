@@ -16,11 +16,11 @@ namespace RecipeBay.DTOs
 		[Required]
 		public required List<string> Steps { get; set; }
 		[Required]
-		public required byte TimeToPrepareMinutes { get; set; }
+		public byte TimeToPrepareMinutes { get; set; }
 		[Required]
-		public required byte TimeToPrepareHours { get; set; }
+		public byte TimeToPrepareHours { get; set; }
 		[Required]
-		public required bool TimeToPrepareLongerThan1Day { get; set; }
+		public bool TimeToPrepareLongerThan1Day { get; set; }
 	}
 
 }

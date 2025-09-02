@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using RecipeBay.Services;
 using RecipeBay.DTOs;
-using RecipeBay.Mappings;
 using RecipeBay.Data;
+using RecipeBay.Mappings;
 
 namespace RecipeBay.Controllers
 {
@@ -30,7 +30,7 @@ namespace RecipeBay.Controllers
 		}
 
 		[HttpPost("register")]
-		public async Task<ActionResult<UserProfileDtoPage>> Register(RegisterDto dto)
+		public async Task<ActionResult<UserProfileDtoDisplay>> Register(RegisterDto dto)
 		{
 
 			if (!UsernameValid(dto.Username))
@@ -39,10 +39,18 @@ namespace RecipeBay.Controllers
 			if (!EmailValid(dto.Email))
 				return BadRequest("Invalid email format.");
 
-			var user = dto.ToEntity();
 
-			user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-			user.CreatedAt = DateTime.UtcNow;
+			var PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+			var CreatedAt = DateTime.UtcNow;
+
+			var user = new Models.User
+			{
+				Username = dto.Username,
+				Email = dto.Email,
+				PasswordHash = PasswordHash,
+				CreatedAt = CreatedAt
+			};
+
 
 			_context.Users.Add(user);
 			await _context.SaveChangesAsync();
@@ -51,7 +59,7 @@ namespace RecipeBay.Controllers
 				actionName: "GetUser",
 				controllerName: "Users",
 				routeValues: new { id = user.Id },
-				value: user.ToDtoPage()
+				value: user.ToDtoDisplay()
 			);
 		}
 

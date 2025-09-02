@@ -16,16 +16,36 @@ namespace RecipeBay.Data
 
 		public DbSet<User> Users { get; set; }
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
+		public DbSet<Comment> Comments { get; set; }
 
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			base.OnModelCreating(modelBuilder);
+
+			// Recipe → User (Author)
             modelBuilder.Entity<Recipe>()
                 .HasOne(r => r.Author)
                 .WithMany(u => u.Recipes)
                 .HasForeignKey(r => r.AuthorId)
                 .OnDelete(DeleteBehavior.SetNull);
-        }
+
+            // Comment → User (Author of comment)
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.Author)
+                .WithMany(u => u.Comments)
+                .HasForeignKey(c => c.AuthorId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Comment → Recipe
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.Recipe)
+                .WithMany(r => r.Comments)
+                .HasForeignKey(c => c.RecipeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+			
+
+		}
 
 	}
 }

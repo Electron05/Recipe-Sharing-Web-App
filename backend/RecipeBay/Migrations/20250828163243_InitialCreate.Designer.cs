@@ -13,8 +13,8 @@ using RecipeBay.Data;
 namespace RecipeBay.Migrations
 {
     [DbContext(typeof(RecipeBayContext))]
-    [Migration("20250825070540_UserAndRecipeRelationUpdate")]
-    partial class UserAndRecipeRelationUpdate
+    [Migration("20250828163243_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,6 +26,43 @@ namespace RecipeBay.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("RecipeBay.Models.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(4096)
+                        .HasColumnType("character varying(4096)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Likes")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RecipeId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("RecipeId");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("RecipeBay.Models.Recipe", b =>
                 {
                     b.Property<int>("Id")
@@ -34,7 +71,7 @@ namespace RecipeBay.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AuthorId")
+                    b.Property<int>("AuthorId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
@@ -62,6 +99,9 @@ namespace RecipeBay.Migrations
                     b.Property<byte>("TimeToPrepareHours")
                         .HasColumnType("smallint");
 
+                    b.Property<bool>("TimeToPrepareLongerThan1Day")
+                        .HasColumnType("boolean");
+
                     b.Property<byte>("TimeToPrepareMinutes")
                         .HasColumnType("smallint");
 
@@ -69,6 +109,9 @@ namespace RecipeBay.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -102,9 +145,31 @@ namespace RecipeBay.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<bool>("isDeleted")
+                        .HasColumnType("boolean");
+
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("RecipeBay.Models.Comment", b =>
+                {
+                    b.HasOne("RecipeBay.Models.User", "Author")
+                        .WithMany("Comments")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+
+                    b.HasOne("RecipeBay.Models.Recipe", "Recipe")
+                        .WithMany("Comments")
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("RecipeBay.Models.Recipe", b =>
@@ -112,13 +177,21 @@ namespace RecipeBay.Migrations
                     b.HasOne("RecipeBay.Models.User", "Author")
                         .WithMany("Recipes")
                         .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
 
                     b.Navigation("Author");
                 });
 
+            modelBuilder.Entity("RecipeBay.Models.Recipe", b =>
+                {
+                    b.Navigation("Comments");
+                });
+
             modelBuilder.Entity("RecipeBay.Models.User", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Recipes");
                 });
 #pragma warning restore 612, 618

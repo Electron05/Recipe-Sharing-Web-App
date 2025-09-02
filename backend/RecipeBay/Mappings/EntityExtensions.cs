@@ -8,12 +8,13 @@ namespace RecipeBay.Mappings
 {
 	public static class EntityExtensions
 	{
-		// Recipe → RecipeDto
-		public static RecipeDtoPage ToDtoPage(this Recipe r)
+		// Recipe → RecipeDtoDisplay
+		public static RecipeDtoDisplay ToDtoDisplay(this Recipe r)
 		{
-			return new RecipeDtoPage
+			return new RecipeDtoDisplay
 			{
 				Id = r.Id,
+				isDeleted = r.isDeleted,
 				Title = r.Title,
 				Description = r.Description,
 				Ingredients = r.Ingredients,
@@ -29,47 +30,35 @@ namespace RecipeBay.Mappings
 			};
 		}
 
-
-		// RecipeDtoCreate → Recipe
-		public static Recipe ToEntity(this RecipeDtoCreate dto)
+		// User → UserProfileDtoDisplay
+		public static UserProfileDtoDisplay ToDtoDisplay(this User u)
 		{
-			return new Recipe
-			{
-				Title = dto.Title,
-				Description = dto.Description,
-				Ingredients = dto.Ingredients,
-				IgredientsAmounts = dto.IngredientsAmounts,
-				Steps = dto.Steps,
-				TimeToPrepareMinutes = dto.TimeToPrepareMinutes,
-				TimeToPrepareHours = dto.TimeToPrepareHours,
-				TimeToPrepareLongerThan1Day = dto.TimeToPrepareLongerThan1Day,
-			};
-		}
-
-		// User → UserProfileDto
-		public static UserProfileDtoPage ToDtoPage(this User u)
-		{
-			return new UserProfileDtoPage
+			return new UserProfileDtoDisplay
 			{
 				Id = u.Id,
+				isDeleted = u.isDeleted,
 				Username = u.Username,
-
 				// Strip email and pass hash
-
 				CreatedAt = u.CreatedAt,
-				Recipes = u.Recipes?.Select(r => r.ToDtoPage()).ToList() ?? new List<RecipeDtoPage>()
+				Recipes = u.Recipes?.Select(r => r.ToDtoDisplay()).ToList() ?? new List<RecipeDtoDisplay>()
 			};
 		}
 
-
-		// UserProfileDtoCreate → User
-		public static User ToEntity(this RegisterDto dto)
+		// Comment → CommentDtoDisplay
+		public static CommentDtoDisplay ToDtoDisplay(this Comment c)
 		{
-			return new User
+			return new CommentDtoDisplay
 			{
-				Username = dto.Username,
-				Email = dto.Email,
+				Id = c.Id,
+				isDeleted = c.isDeleted,
+				Body = c.Body,
+				RecipeId = c.RecipeId,
+				AuthorId = c.AuthorId,
+				CreatedAt = c.CreatedAt,
+				Likes = c.Likes
 			};
 		}
+
+
 	}
 }

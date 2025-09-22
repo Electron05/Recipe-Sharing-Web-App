@@ -1,0 +1,57 @@
+<h2 class="register-title">Register</h2>
+
+<ng-container *ngIf="registrationSuccess !== true">
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Username</mat-label>
+      <input matInput type="text" formControlName="username" placeholder="Choose a username" />
+      <mat-error *ngIf="registerForm.get('username')?.touched && registerForm.get('username')?.invalid">
+        Username is required (min 3 chars).
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" placeholder="Enter your email" />
+      <mat-error *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid">
+        Email must be valid.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Password</mat-label>
+      <input matInput type="password" formControlName="password" placeholder="Create a password" />
+      <mat-error *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid">
+        Password must be at least 6 characters.
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Confirm Password</mat-label>
+      <input matInput type="password" formControlName="confirmPassword" placeholder="Repeat your password" />
+      <mat-error *ngIf="registerForm.get('confirmPassword')?.hasError('required')">
+        Please confirm your password.
+      </mat-error>
+      <mat-error *ngIf="!registerForm.get('confirmPassword')?.hasError('required') && 
+                        registerForm.get('confirmPassword')?.hasError('passwordsMismatch')">
+        Passwords do not match.
+      </mat-error>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="registerForm.invalid">
+      Register
+    </button>
+  </form>
+
+  <p class="login-text">
+    Already have an account? <a routerLink="/login">Login</a>
+  </p>
+</ng-container>
+
+<div *ngIf="registrationSuccess === true" class="success-message">
+  Registration successful! <a routerLink="/login">You can now log in</a>
+</div>
+
+<div *ngIf="registrationSuccess === false" class="error-message">
+  {{ registrationMessage }}
+</div>

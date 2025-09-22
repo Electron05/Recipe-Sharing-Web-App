@@ -12,8 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 ConfigureAuthentication(builder);
 ConfigureServices(builder);
 ConfigureDatabase(builder);
+AddCORS(builder);
 
 var app = builder.Build();
+app.UseCors("AllowAngular");
 
 ApplyMigrations(app);
 ConfigureMiddleware(app);
@@ -21,6 +23,18 @@ ConfigureMiddleware(app);
 app.Run();
 
 // Method Definitions
+
+static void AddCORS(WebApplicationBuilder builder)
+{
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAngular",
+            policy => policy
+                .WithOrigins("http://localhost:4200")
+                .AllowAnyHeader()
+                .AllowAnyMethod());
+    });
+}
 
 static void ConfigureAuthentication(WebApplicationBuilder builder)
 {

@@ -1,0 +1,73 @@
+html, body, app-root {
+  height: 100%;
+  margin: 0;
+}
+body{
+  font-size: 62.5%;
+}
+
+.sidenav-container {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.sidenav {
+  width: 260px;
+  height: 100%;
+  flex-direction: column;
+  background: #fafafa;
+  border-right: 1px solid #ddd;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.sidenav h1 {
+  font-size: 2.4em;
+}
+
+.sidenav a {
+  font-size: 1.6em;
+  text-decoration: none;
+  color: #333;
+  padding: 10px 0px;
+}
+.sidenav a:hover {
+  color: dodgerblue;
+}
+
+
+
+.sidenav .user-bar, .sidenav .guest-bar {
+  height: 72px;
+  margin-top: max(0px, calc(100vh - 300px));
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+.sidenav .user-bar {
+  gap: 8px;
+  background: #fcfcfc;
+}
+.sidenav .user-bar .profile-pic {
+  width: 38px;
+  height: 38px;
+}
+.sidenav .user-bar .username {
+  font-size: 1.1em;
+  font-weight: 500;
+  color: #333;
+  text-decoration: none;
+}
+
+
+.sidenav .guest-bar .username {
+  font-size: 2em;
+  font-weight: 500;
+  color: dodgerblue;
+  text-decoration: none;
+}

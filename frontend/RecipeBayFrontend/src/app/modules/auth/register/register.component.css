@@ -1,0 +1,57 @@
+.register-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.register-form {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: #fafafa;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.form-field {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.login-text {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.login-text a {
+  color: #1976d2;
+  text-decoration: none;
+  font-weight: 500;
+}
+.login-text a:hover {
+  text-decoration: underline;
+}
+
+.success-message {
+  font-size: 2rem;
+  color: green;
+  text-align: center;
+  margin-top: 2rem;
+  
+}
+.success-message a {
+  color: #1976d2;
+  font-weight: 600;
+}
+
+
+.error-message {
+  font-size: 2rem;
+  color: red;
+  text-align: center;
+  margin-top: 1rem;
+}

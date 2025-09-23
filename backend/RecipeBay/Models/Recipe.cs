@@ -19,11 +19,7 @@ namespace RecipeBay.Models
         public required string Description { get; set; }
 
 
-        [Column(TypeName = "jsonb")]
-        public List<string> Ingredients { get; set; } = new();
-
-        [Column(TypeName = "jsonb")]
-        public List<string> IgredientsAmounts { get; set; } = new();
+        public List<IngredientEntry> IngredientEntries { get; set; } = new();
 
         [Column(TypeName = "jsonb")]
         public List<string> Steps { get; set; } = new();

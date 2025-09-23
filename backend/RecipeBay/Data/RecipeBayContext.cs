@@ -18,34 +18,63 @@ namespace RecipeBay.Data
 
 		public DbSet<Comment> Comments { get; set; }
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-			base.OnModelCreating(modelBuilder);
+        public DbSet<Ingredient> Ingredients { get; set; }
 
-			// Recipe → User (Author)
+        public DbSet<IngredientEntry> IngredientEntries { get; set; }
+
+        public DbSet<IngredientAlias> IngredientAliases { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Recipe -> User (Author)
             modelBuilder.Entity<Recipe>()
                 .HasOne(r => r.Author)
                 .WithMany(u => u.Recipes)
                 .HasForeignKey(r => r.AuthorId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            // Comment → User (Author of comment)
+            // Comment -> User (Author of comment)
             modelBuilder.Entity<Comment>()
                 .HasOne(c => c.Author)
                 .WithMany(u => u.Comments)
                 .HasForeignKey(c => c.AuthorId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            // Comment → Recipe
+            // Comment -> Recipe
             modelBuilder.Entity<Comment>()
                 .HasOne(c => c.Recipe)
                 .WithMany(r => r.Comments)
                 .HasForeignKey(c => c.RecipeId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-			
+            // Recipe -> RecipeIngredientEntry -> Ingredient -> IngredientAliasOrPart
+            modelBuilder.Entity<IngredientEntry>()
+                .HasOne(rie => rie.Recipe)
+                .WithMany(r => r.IngredientEntries)
+                .HasForeignKey(rie => rie.RecipeId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-		}
+            modelBuilder.Entity<IngredientEntry>()
+                .HasOne(rie => rie.Ingredient)
+                .WithMany(i => i.RecipeEntries)
+                .HasForeignKey(rie => rie.IngredientId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<IngredientAlias>()
+                .HasOne(iap => iap.Ingredient)
+                .WithMany(i => i.Aliases)
+                .HasForeignKey(iap => iap.IngredientId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Ingredient part relationship
+            modelBuilder.Entity<Ingredient>()
+                .HasOne(i => i.IsPartOf)
+                .WithMany()
+                .HasForeignKey(i => i.ParentIngredientId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent deletion if it has parts
+        }
 
 	}
 }

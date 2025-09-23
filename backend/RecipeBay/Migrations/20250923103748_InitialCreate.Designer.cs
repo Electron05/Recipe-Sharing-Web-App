@@ -13,7 +13,7 @@ using RecipeBay.Data;
 namespace RecipeBay.Migrations
 {
     [DbContext(typeof(RecipeBayContext))]
-    [Migration("20250828163243_InitialCreate")]
+    [Migration("20250923103748_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,6 +25,90 @@ namespace RecipeBay.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Ingredient", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ParentIngredientId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Plural")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentIngredientId");
+
+                    b.ToTable("Ingredients");
+                });
+
+            modelBuilder.Entity("IngredientAlias", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IngredientId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Plural")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IngredientId");
+
+                    b.ToTable("IngredientAliases");
+                });
+
+            modelBuilder.Entity("IngredientEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IngredientId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsPlural")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Quantity")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("RecipeId")
+                        .HasColumnType("integer");
+
+                    b.Property<short>("SortOrder")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IngredientId");
+
+                    b.HasIndex("RecipeId");
+
+                    b.ToTable("IngredientEntries");
+                });
 
             modelBuilder.Entity("RecipeBay.Models.Comment", b =>
                 {
@@ -80,14 +164,6 @@ namespace RecipeBay.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<List<string>>("IgredientsAmounts")
-                        .IsRequired()
-                        .HasColumnType("jsonb");
-
-                    b.Property<List<string>>("Ingredients")
-                        .IsRequired()
-                        .HasColumnType("jsonb");
 
                     b.Property<int>("Likes")
                         .HasColumnType("integer");
@@ -153,6 +229,46 @@ namespace RecipeBay.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Ingredient", b =>
+                {
+                    b.HasOne("Ingredient", "IsPartOf")
+                        .WithMany()
+                        .HasForeignKey("ParentIngredientId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("IsPartOf");
+                });
+
+            modelBuilder.Entity("IngredientAlias", b =>
+                {
+                    b.HasOne("Ingredient", "Ingredient")
+                        .WithMany("Aliases")
+                        .HasForeignKey("IngredientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ingredient");
+                });
+
+            modelBuilder.Entity("IngredientEntry", b =>
+                {
+                    b.HasOne("Ingredient", "Ingredient")
+                        .WithMany("RecipeEntries")
+                        .HasForeignKey("IngredientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RecipeBay.Models.Recipe", "Recipe")
+                        .WithMany("IngredientEntries")
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ingredient");
+
+                    b.Navigation("Recipe");
+                });
+
             modelBuilder.Entity("RecipeBay.Models.Comment", b =>
                 {
                     b.HasOne("RecipeBay.Models.User", "Author")
@@ -183,9 +299,18 @@ namespace RecipeBay.Migrations
                     b.Navigation("Author");
                 });
 
+            modelBuilder.Entity("Ingredient", b =>
+                {
+                    b.Navigation("Aliases");
+
+                    b.Navigation("RecipeEntries");
+                });
+
             modelBuilder.Entity("RecipeBay.Models.Recipe", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("IngredientEntries");
                 });
 
             modelBuilder.Entity("RecipeBay.Models.User", b =>

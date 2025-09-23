@@ -2,22 +2,27 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-
 using RecipeBay.Data;
 using Npgsql;
 using RecipeBay.Services;
+
+const bool SeedIngredients = false;
 
 var builder = WebApplication.CreateBuilder(args);
 
 ConfigureAuthentication(builder);
 ConfigureServices(builder);
+
 ConfigureDatabase(builder);
+
 AddCORS(builder);
 
 var app = builder.Build();
 app.UseCors("AllowAngular");
 
 ApplyMigrations(app);
+if(SeedIngredients)
+    SeedDatabase(app);
 ConfigureMiddleware(app);
 
 app.Run();
@@ -135,6 +140,14 @@ static void ApplyMigrations(WebApplication app)
             Thread.Sleep(1000);
         }
     }
+}
+
+static void SeedDatabase(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<RecipeBayContext>();
+    string filePath = Path.Combine("Data", "PossibleIngredientsSingular.txt");
+    IngredientSeeder.SeedIngredients(db, filePath);
 }
 
 static void ConfigureMiddleware(WebApplication app)

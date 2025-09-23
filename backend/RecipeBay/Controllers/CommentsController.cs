@@ -12,11 +12,11 @@ namespace RecipeBay.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
-	public class CommentController : ControllerBase
+	public class CommentsController : ControllerBase
 	{
 		private readonly RecipeBayContext _context;
 
-		public CommentController(RecipeBayContext context)
+		public CommentsController(RecipeBayContext context)
 		{
 			_context = context;
 		}

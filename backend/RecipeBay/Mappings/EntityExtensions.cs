@@ -1,14 +1,12 @@
 using RecipeBay.Models;
 using RecipeBay.DTOs;
-using BCrypt.Net;
-using Microsoft.AspNetCore.Identity;
 
 
 namespace RecipeBay.Mappings
 {
 	public static class EntityExtensions
 	{
-		// Recipe → RecipeDtoDisplay
+		// Recipe -> RecipeDtoDisplay
 		public static RecipeDtoDisplay ToDtoDisplay(this Recipe r)
 		{
 			return new RecipeDtoDisplay
@@ -17,8 +15,8 @@ namespace RecipeBay.Mappings
 				isDeleted = r.isDeleted,
 				Title = r.Title,
 				Description = r.Description,
-				Ingredients = r.Ingredients,
-				IngredientsAmounts = r.IgredientsAmounts,
+				Ingredients = r.IngredientEntries.Select(ie => ie.Ingredient.Name).ToList(),
+				IngredientsAmounts = r.IngredientEntries.Select(ie => ie.Quantity).ToList(),
 				Steps = r.Steps,
 				TimeToPrepareMinutes = r.TimeToPrepareMinutes,
 				TimeToPrepareHours = r.TimeToPrepareHours,
@@ -30,7 +28,7 @@ namespace RecipeBay.Mappings
 			};
 		}
 
-		// User → UserProfileDtoDisplay
+		// User -> UserProfileDtoDisplay
 		public static UserProfileDtoDisplay ToDtoDisplay(this User u)
 		{
 			return new UserProfileDtoDisplay
@@ -44,7 +42,7 @@ namespace RecipeBay.Mappings
 			};
 		}
 
-		// Comment → CommentDtoDisplay
+		// Comment -> CommentDtoDisplay
 		public static CommentDtoDisplay ToDtoDisplay(this Comment c)
 		{
 			return new CommentDtoDisplay
@@ -59,6 +57,31 @@ namespace RecipeBay.Mappings
 			};
 		}
 
+		// Ingredient -> IngredientSuggestionDto
+		public static IngredientSuggestionDto ToSuggestionDto(this Ingredient i)
+		{
+			return new IngredientSuggestionDto
+			{
+				Id = i.Id,
+				Name = i.Name,
+				Plural = i.Plural,
+				isAlias = false,
+				BaseIngredientId = i.ParentIngredientId
+			};
+		}
+
+		// IngredientAlias -> IngredientSuggestionDto
+		public static IngredientSuggestionDto ToSuggestionDto(this IngredientAlias ia)
+		{
+			return new IngredientSuggestionDto
+			{
+				Id = ia.Id,
+				Name = ia.Name,
+				Plural = ia.Plural,
+				isAlias = true,
+				BaseIngredientId = ia.IngredientId
+			};
+		}
 
 	}
 }

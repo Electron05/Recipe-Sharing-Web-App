@@ -7,6 +7,8 @@ import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
 import { LoginService } from '../../../services/login.service';
 import { AuthService } from '../../../services/auth.service';
+import { ChangeDetectionStrategy } from '@angular/core';
+
 
 @Component({
   selector: 'app-login',
@@ -18,7 +20,8 @@ import { AuthService } from '../../../services/auth.service';
             MatInputModule,
             RouterLink],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css',],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class LoginComponent {

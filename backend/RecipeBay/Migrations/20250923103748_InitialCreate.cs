@@ -14,6 +14,27 @@ namespace RecipeBay.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Ingredients",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Plural = table.Column<string>(type: "text", nullable: false),
+                    ParentIngredientId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ingredients", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Ingredients_Ingredients_ParentIngredientId",
+                        column: x => x.ParentIngredientId,
+                        principalTable: "Ingredients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -31,6 +52,27 @@ namespace RecipeBay.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "IngredientAliases",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IngredientId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Plural = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IngredientAliases", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_IngredientAliases_Ingredients_IngredientId",
+                        column: x => x.IngredientId,
+                        principalTable: "Ingredients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Recipes",
                 columns: table => new
                 {
@@ -39,8 +81,6 @@ namespace RecipeBay.Migrations
                     isDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    Ingredients = table.Column<List<string>>(type: "jsonb", nullable: false),
-                    IgredientsAmounts = table.Column<List<string>>(type: "jsonb", nullable: false),
                     Steps = table.Column<List<string>>(type: "jsonb", nullable: false),
                     TimeToPrepareMinutes = table.Column<byte>(type: "smallint", nullable: false),
                     TimeToPrepareHours = table.Column<byte>(type: "smallint", nullable: false),
@@ -90,6 +130,35 @@ namespace RecipeBay.Migrations
                         onDelete: ReferentialAction.SetNull);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "IngredientEntries",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RecipeId = table.Column<int>(type: "integer", nullable: false),
+                    IngredientId = table.Column<int>(type: "integer", nullable: false),
+                    Quantity = table.Column<string>(type: "text", nullable: false),
+                    IsPlural = table.Column<bool>(type: "boolean", nullable: false),
+                    SortOrder = table.Column<short>(type: "smallint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IngredientEntries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_IngredientEntries_Ingredients_IngredientId",
+                        column: x => x.IngredientId,
+                        principalTable: "Ingredients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_IngredientEntries_Recipes_RecipeId",
+                        column: x => x.RecipeId,
+                        principalTable: "Recipes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_AuthorId",
                 table: "Comments",
@@ -99,6 +168,26 @@ namespace RecipeBay.Migrations
                 name: "IX_Comments_RecipeId",
                 table: "Comments",
                 column: "RecipeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IngredientAliases_IngredientId",
+                table: "IngredientAliases",
+                column: "IngredientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IngredientEntries_IngredientId",
+                table: "IngredientEntries",
+                column: "IngredientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_IngredientEntries_RecipeId",
+                table: "IngredientEntries",
+                column: "RecipeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ingredients_ParentIngredientId",
+                table: "Ingredients",
+                column: "ParentIngredientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Recipes_AuthorId",
@@ -111,6 +200,15 @@ namespace RecipeBay.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Comments");
+
+            migrationBuilder.DropTable(
+                name: "IngredientAliases");
+
+            migrationBuilder.DropTable(
+                name: "IngredientEntries");
+
+            migrationBuilder.DropTable(
+                name: "Ingredients");
 
             migrationBuilder.DropTable(
                 name: "Recipes");

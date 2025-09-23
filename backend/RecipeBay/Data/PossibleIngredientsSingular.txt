@@ -1,0 +1,347 @@
+Allspice Berry
+Almond
+Amaretto
+Anchovy
+Apple
+Apple Juice
+Asafoetida
+Aubergine
+Avocado
+Baby Corn
+Bacon
+Baguette
+Bailey
+Baked Bean
+Baking Powder
+Baking Soda
+Balsamic Glaze
+Balsamic Vinegar
+Banana
+Basil
+Bay Leaf
+BBQ Seasoning
+Beansprout
+Beef
+Beetroot
+Bicarbonate of Soda
+Black Olive
+Black Pudding
+Blueberry
+Bouquet Garni
+Brandy
+Bread
+Bread Flour
+Broccoli
+Brown Sugar
+Brussel Sprout
+Butter
+Butter Bean
+Buttermilk
+Butternut Squash
+Cabbage
+Cajun Spice
+Cannellini Bean
+Caper
+Cake Flour
+Caramel
+Cardamom Pod
+Carrot
+Cashew
+Caster Sugar
+Cauliflower
+Cavolo Nero
+Celery
+Cheese
+Cherry
+Cherry Tomato
+Chia Seed
+Chicken (full)
+Chicken Thigh
+Chicken Fillet
+Chicken Breast
+Chickpea
+Chilli
+Chilli Flake
+Chilli Powder
+Chipotle Paste
+Chive
+Chocolate
+Chocolate Chip
+Chorizo
+Cider
+Cider Vinegar
+Cinnamon
+Clove
+Cocoa Powder
+Coconut Cream
+Coconut Water
+Cod
+Coffee
+Condensed Milk
+Coriander
+Corn Flour
+Cornflake
+Courgette
+Cous Cous
+Cranberry
+Cranberry Juice
+Cream (any)
+Cream Cheese
+Cream of Tartar
+Creamed Coconut
+Creme Fraiche
+Crouton
+Cucumber
+Cumin
+Currant
+Curry Paste
+Curry Powder
+Curry Sauce
+Date
+Demerara Sugar
+Desiccated Coconut
+Digestive Biscuit
+Dijon Mustard
+Dried Cranberry
+Edible Glitter
+Egg
+	Egg White
+	Egg Yolk
+Eggplant
+Espresso
+Fennel
+Fenugreek
+Feta
+Fish (any)
+Fish Sauce
+Flour
+Food Colouring
+French Stick
+Gammon
+Garam Masala
+Garlic Clove
+Garlic Powder
+Gelatine
+Gin
+Ginger
+Goat Cheese
+Golden Syrup
+Goose Fat
+Granola
+Grape
+Greek Yogurt
+Green Bean
+Guacamole
+Guinness
+Ham
+Hazelnut
+Heavy Cream
+Hollandaise Sauce
+Honey
+Horseradish
+Hot Chocolate Powder
+Hot Sauce
+Hundred and Thousand
+Ice
+Ice Cube
+Icing
+Icing Sugar
+Jalapeno Pepper
+Kale
+Kidney Bean
+Lamb
+Lard
+Leek
+Lemon
+Lemon Curd
+Lemon Juice
+Lentil
+Lettuce
+Lime
+Lobster
+Lobster Tail
+Macaroni (any)
+Mackerel
+Mangetout
+Mango
+Maple Syrup
+Marjoram
+Marshmallow
+Mascarpone Cheese
+Mayonnaise
+Meatball
+Melon
+Meringue
+Milk
+Milk Powder
+Minced Beef
+Minced Pork
+Minced Turkey
+Mincemeat
+Mini Egg
+Mint
+Mixed Bean
+Mixed Italian Herb
+Mixed Spice
+Mozzarella
+Muffin
+Muscovado Sugar
+Mushroom
+Mushroom Soup
+Mussel
+Mustard
+Mustard Seed
+Nectarine
+Noodle
+Nutella
+Nutmeg
+Nut
+Oat
+Oil
+Olive
+Olive Oil
+Onion
+Orange
+Orange Juice
+Orange Liqueur
+Orange Zest
+Oregano
+Oreo
+Oxo
+Oyster Sauce
+Pancetta
+Paprika
+Parma Ham
+Parmesan
+Parsley
+Parsnip
+Passata
+Pasta
+Pastry
+Peach
+Peanut
+Peanut Butter
+Pear
+Pea
+Pecan
+Pepper
+Peppercorn
+Pesto
+Pine Nut
+Pineapple
+Pineapple Juice
+Pistachio
+Pizza Base
+Plain Flour
+Plum Tomato
+Pomegranate Seed
+Pork
+Porridge
+Potato
+Prawn
+Prosecco
+Protein Powder
+Puff Pastry
+Pumpkin
+Puree
+Quark
+Raisin
+Raspberry
+Red Onion
+Red Snapper
+Red Wine
+Redcurrant
+Refried Bean
+Rib
+Rice
+Rice Krispie
+Rice Noodle
+Ricotta
+Risotto
+Ritz
+Rocket
+Rosemary
+Rum
+Saffron
+Sage
+Salad
+Salmon
+Salsa
+Salt
+Saltine
+Sausage
+Self Raising Flour
+Semolina
+Sesame Seed
+Shallot
+Shortcrust Pastry
+Smartie
+Soda
+Soda Water
+Sour Cream
+Sourdough Starter
+Soy Sauce
+Spaghetti
+Sparkling Water
+Spinach
+Sponge Finger
+Spring Onion
+Sprinkle
+Star Anise
+Stilton
+Stock
+Strawberry
+Strawberry Sauce
+Stuffing
+Suet
+Sugar
+Sugar Snap Pea
+Sugar Syrup
+Sultana
+Summer Fruit
+Sun-dried Tomato
+Sundried Tomato
+Sunflower Oil
+Swede
+Sweet Potato
+Sweetcorn
+Tagliatelle
+Tarragon
+Tartar Sauce
+Tea
+Thyme
+Tia Maria
+Tinned Tomatoes
+Toast
+Tomato
+Tomato Ketchup
+Tomato Puree
+Tomato Relish
+Tortilla Chip
+Tortilla Wrap
+Treacle
+Tuc
+Turkey
+Turmeric
+undefined
+Vanilla Essence
+Vanilla Extract
+Vanilla Pod
+Vegetable Oil
+Vinegar
+Vodka
+Walnut
+Warburtons Thin
+Watercress
+Whisky
+White Chocolate
+White Flour
+White Sauce
+White Wine
+White Wine Vinegar
+Wholemeal Flour
+Worcester Sauce
+Worcestershire Sauce
+Yeast
+Yogurt
+Zucchini

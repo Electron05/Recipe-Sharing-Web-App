@@ -69,7 +69,7 @@ namespace RecipeBay.Controllers
             {
                 Title = dto.Title,
                 Description = dto.Description,
-                Ingredients = dto.Ingredients,
+                IngredientEntries = new List<IngredientEntry>(),
                 Steps = dto.Steps,
                 CreatedAt = DateTime.UtcNow,
                 AuthorId = authorId,

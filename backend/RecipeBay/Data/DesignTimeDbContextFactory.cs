@@ -10,7 +10,7 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<RecipeBayC
 	public RecipeBayContext CreateDbContext(string[] args)
 	{
 		var optionsBuilder = new DbContextOptionsBuilder<RecipeBayContext>();
-		optionsBuilder.UseNpgsql("Host=localhost;Database=recipebay;Username=postgres;Password=yourpassword");
+		optionsBuilder.UseNpgsql("Host=localhost;Database=recipebay;Username=postgres;Password=anypasswordheredoesnotmatter");
 		return new RecipeBayContext(optionsBuilder.Options);
 	}
 }

@@ -6,7 +6,12 @@ using RecipeBay.Data;
 using Npgsql;
 using RecipeBay.Services;
 
-const bool SeedIngredients = false;
+const bool UseLocalEnvironment = false;
+if(UseLocalEnvironment)
+    DotNetEnv.Env.Load("../../.env");
+
+const bool SeedIngredientsOnStartup = false;
+const bool ApplyMigrationsOnStartup = false;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,8 +25,9 @@ AddCORS(builder);
 var app = builder.Build();
 app.UseCors("AllowAngular");
 
-ApplyMigrations(app);
-if(SeedIngredients)
+if(ApplyMigrationsOnStartup)
+    ApplyMigrations(app);
+if(SeedIngredientsOnStartup)
     SeedDatabase(app);
 ConfigureMiddleware(app);
 
@@ -111,7 +117,8 @@ static void ConfigureServices(WebApplicationBuilder builder)
 
 static void ConfigureDatabase(WebApplicationBuilder builder)
 {
-    var dataSourceBuilder = new NpgsqlDataSourceBuilder(
+    var dataSourceBuilder = new NpgsqlDataSourceBuilder( 
+        UseLocalEnvironment ? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") :
         builder.Configuration.GetConnectionString("DefaultConnection")
     );
     dataSourceBuilder.EnableDynamicJson();
@@ -124,21 +131,15 @@ static void ConfigureDatabase(WebApplicationBuilder builder)
 
 static void ApplyMigrations(WebApplication app)
 {
-    var retry = 10;
-    while (retry > 0)
+    try
     {
-        try
-        {
-            using var scope = app.Services.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<RecipeBayContext>();
-            db.Database.Migrate();
-            break;
-        }
-        catch
-        {
-            retry--;
-            Thread.Sleep(1000);
-        }
+        using var scope = app.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<RecipeBayContext>();
+        db.Database.Migrate();
+    }
+    catch
+    {
+        Console.WriteLine("DB is up to date with latest migration.");
     }
 }
 

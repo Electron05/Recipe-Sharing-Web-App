@@ -3,6 +3,7 @@ using RecipeBay.Services;
 using RecipeBay.DTOs;
 using RecipeBay.Data;
 using RecipeBay.Mappings;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RecipeBay.Controllers
 {
@@ -20,6 +21,7 @@ namespace RecipeBay.Controllers
 			_context = context;
 		}
 
+		[AllowAnonymous]
 		[HttpPost("login")]
 		public async Task<IActionResult> Login(LoginDto dto)
 		{
@@ -29,6 +31,7 @@ namespace RecipeBay.Controllers
 			return Ok(new { token });
 		}
 
+		[AllowAnonymous]
 		[HttpPost("register")]
 		public async Task<ActionResult<UserProfileDtoDisplay>> Register(RegisterDto dto)
 		{

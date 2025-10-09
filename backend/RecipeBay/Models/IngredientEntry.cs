@@ -10,12 +10,17 @@ public class IngredientEntry
 	public int RecipeId { get; set; }
 	public required Recipe Recipe { get; set; }
 
-	[Required]
-	public int IngredientId { get; set; }
-	public required Ingredient Ingredient { get; set; }
+	public int? IngredientId { get; set; }
+	public Ingredient? Ingredient { get; set; }
+
+	public int? IngredientAliasId { get; set; }
+	public IngredientAlias? IngredientAlias { get; set; }
 
 	public required string Quantity { get; set; }
 	public bool IsPlural { get; set; } = false;
 
-	public short SortOrder { get; set; } // Order of appearance in the recipe
+	public bool NotInList { get; set; } = false;
+
+	public string? CustomIngredientName;
+
 }

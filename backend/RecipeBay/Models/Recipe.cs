@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
 namespace RecipeBay.Models
 {
     public class Recipe
@@ -28,6 +27,11 @@ namespace RecipeBay.Models
         public byte TimeToPrepareMinutes { get; set; }
         public byte TimeToPrepareHours { get; set; }
         public bool TimeToPrepareLongerThan1Day { get; set; }
+
+        // 1- Easy; 2 - Medium; 3 - Hard
+        public byte DifficultyFrom1To3 {get; set;}
+
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
 

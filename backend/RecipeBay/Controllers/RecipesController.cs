@@ -32,10 +32,35 @@ namespace RecipeBay.Controllers
             return Ok(recipes);
         }
 
+        [HttpGet("requestForFeed")]
+        public async Task<ActionResult<IEnumerable<RecipeDtoFeed>>> RequestRecipesForFeed(
+            [FromQuery] int? bottomOfFeedRecipeId,
+            [FromQuery] int howMany)
+        {
+            var query = _context.Recipes
+                .Where(r => r.isDeleted == false);
+
+            if (bottomOfFeedRecipeId.HasValue)
+                query = query.Where(r => r.Id < bottomOfFeedRecipeId);
+
+            var recipes = await query
+                .OrderByDescending(r => r.Id)
+                .Select(r => r.ToDtoFeed())
+                .Take(howMany)
+                .ToListAsync();
+
+            return Ok(recipes);
+        }
+
+
         [HttpGet("{id}")]
         public async Task<ActionResult<RecipeDtoDisplay>> GetRecipe(int id)
         {
             var recipe = await _context.Recipes
+                .Include(r => r.IngredientEntries)
+                    .ThenInclude(ie => ie.Ingredient)
+                .Include(r => r.IngredientEntries)
+                    .ThenInclude(ie => ie.IngredientAlias)
                 .Where(r => r.Id == id)
                 .Select(r => r.ToDtoDisplay())
                 .FirstOrDefaultAsync();
@@ -69,13 +94,44 @@ namespace RecipeBay.Controllers
             {
                 Title = dto.Title,
                 Description = dto.Description,
-                IngredientEntries = new List<IngredientEntry>(),
                 Steps = dto.Steps,
-                CreatedAt = DateTime.UtcNow,
+                TimeToPrepareMinutes = dto.TimeToPrepareMinutes,
+                TimeToPrepareHours = dto.TimeToPrepareHours,
+                TimeToPrepareLongerThan1Day = dto.TimeToPrepareLongerThan1Day,
+                DifficultyFrom1To3 = dto.Difficulty.ToLower() switch
+                {
+                    "easy" => (byte)1,
+                    "medium" => (byte)2,
+                    "hard" => (byte)3,
+                    _ => (byte)1
+                },
                 AuthorId = authorId,
-                Author = author,
-                Likes = 0
+                Author = author
             };
+
+            var ingredientIds = dto.IngredientEntries
+                .Where(ie => ie.IngredientId.HasValue)
+                .Select(ie => ie.IngredientId!.Value)
+                .Distinct()
+                .ToList();
+
+            var ingredientsDict = await _context.Ingredients
+                .Where(i => ingredientIds.Contains(i.Id))
+                .ToDictionaryAsync(i => i.Id);
+
+            recipe.IngredientEntries = dto.IngredientEntries.Select(ieDto => new IngredientEntry
+            {
+                Quantity = ieDto.Quantity,
+                IsPlural = ieDto.IsPlural,
+                IngredientId = ieDto.IngredientId,
+                Ingredient = ieDto.IngredientId.HasValue ? ingredientsDict[ieDto.IngredientId.Value] : null,
+                IngredientAliasId = ieDto.IngredientAliasId,
+                NotInList = ieDto.NotInList,
+                CustomIngredientName = ieDto.CustomIngredientName,
+                Recipe = recipe
+            }).ToList();
+
+
 
             _context.Recipes.Add(recipe);
             await _context.SaveChangesAsync();

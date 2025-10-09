@@ -5,6 +5,10 @@
     <p><a routerLink="about">About</a></p>
     <p><a routerLink="contact">Contact</a></p>
     
+    <div class="create-recipe-bar">
+      <a routerLink="create-recipe">Create recipe!</a>
+    </div>
+
     <div class="user-bar" *ngIf="isAuthenticated; else guestBar">
       <img class="profile-pic" src="https://ui-avatars.com/api/?name=User" alt="Profile" />
       <span class="username">{{ 'UserName' }}</span>
@@ -12,15 +16,35 @@
     </div>
     <ng-template #guestBar>
       <div class="guest-bar">
-        <a routerLink="login" class="username">Login</a>
+        <a routerLink="login" class="login">Login</a>
       </div>
     </ng-template>
   </mat-sidenav>
 
-  <mat-sidenav-content>
+  <mat-sidenav-content
+    #mainScrollContainer
+    (scroll)="onScroll($event)"
+  >
     <button mat-icon-button (click)="sidenav.toggle()">
       <mat-icon>menu</mat-icon>
     </button>
+
+    <div *ngIf="isHome" class="home-content">
+      <h2 class="main-header">Welcome to RecipeBay!</h2>
+      <p class="main-title">Discover and share amazing recipes.</p>
+    </div>
+
+    <div *ngIf="isHome">
+      <div *ngFor="let recipe of feed" class="recipe-title">
+        <a [routerLink]="['/recipe', recipe.id]">{{ recipe.title }}</a>
+      </div>
+      <div class="feed-button-container">
+        <button mat-icon-button class="big-feed-button" (click)="requestRecipesForFeed()">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+    </div>
+
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>

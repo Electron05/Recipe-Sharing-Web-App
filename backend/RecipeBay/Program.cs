@@ -11,6 +11,7 @@ if(UseLocalEnvironment)
     DotNetEnv.Env.Load("../../.env");
 
 const bool SeedIngredientsOnStartup = false;
+const bool SeedRecipesOnStartup = false;
 const bool ApplyMigrationsOnStartup = false;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,7 +29,9 @@ app.UseCors("AllowAngular");
 if(ApplyMigrationsOnStartup)
     ApplyMigrations(app);
 if(SeedIngredientsOnStartup)
-    SeedDatabase(app);
+    SeedIngredientsDatabase(app);
+if (SeedRecipesOnStartup)
+    SeedRecipesDatabase(app);
 ConfigureMiddleware(app);
 
 app.Run();
@@ -143,12 +146,18 @@ static void ApplyMigrations(WebApplication app)
     }
 }
 
-static void SeedDatabase(WebApplication app)
+static void SeedIngredientsDatabase(WebApplication app)
 {
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<RecipeBayContext>();
     string filePath = Path.Combine("Data", "PossibleIngredientsSingular.txt");
     IngredientSeeder.SeedIngredients(db, filePath);
+}
+static void SeedRecipesDatabase(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<RecipeBayContext>();
+    IngredientSeeder.SeedRecipes(db);
 }
 
 static void ConfigureMiddleware(WebApplication app)

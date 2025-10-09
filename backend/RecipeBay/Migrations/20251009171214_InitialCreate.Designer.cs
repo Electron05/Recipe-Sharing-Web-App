@@ -13,7 +13,7 @@ using RecipeBay.Data;
 namespace RecipeBay.Migrations
 {
     [DbContext(typeof(RecipeBayContext))]
-    [Migration("20250923103748_InitialCreate")]
+    [Migration("20251009171214_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -68,6 +68,7 @@ namespace RecipeBay.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Plural")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -85,10 +86,16 @@ namespace RecipeBay.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("IngredientId")
+                    b.Property<int?>("IngredientAliasId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IngredientId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsPlural")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("NotInList")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Quantity")
@@ -98,10 +105,9 @@ namespace RecipeBay.Migrations
                     b.Property<int>("RecipeId")
                         .HasColumnType("integer");
 
-                    b.Property<short>("SortOrder")
-                        .HasColumnType("smallint");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("IngredientAliasId");
 
                     b.HasIndex("IngredientId");
 
@@ -164,6 +170,9 @@ namespace RecipeBay.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<byte>("DifficultyFrom1To3")
+                        .HasColumnType("smallint");
 
                     b.Property<int>("Likes")
                         .HasColumnType("integer");
@@ -252,11 +261,15 @@ namespace RecipeBay.Migrations
 
             modelBuilder.Entity("IngredientEntry", b =>
                 {
+                    b.HasOne("IngredientAlias", "IngredientAlias")
+                        .WithMany()
+                        .HasForeignKey("IngredientAliasId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Ingredient", "Ingredient")
                         .WithMany("RecipeEntries")
                         .HasForeignKey("IngredientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("RecipeBay.Models.Recipe", "Recipe")
                         .WithMany("IngredientEntries")
@@ -265,6 +278,8 @@ namespace RecipeBay.Migrations
                         .IsRequired();
 
                     b.Navigation("Ingredient");
+
+                    b.Navigation("IngredientAlias");
 
                     b.Navigation("Recipe");
                 });

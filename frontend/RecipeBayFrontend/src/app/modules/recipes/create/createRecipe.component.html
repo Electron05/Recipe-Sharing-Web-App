@@ -1,0 +1,150 @@
+<h2 class="title">Create Recipe!</h2>
+
+<ng-container *ngIf="createRecipeSuccess === true">
+  <div>
+    <span>Create success!</span>
+  </div>
+</ng-container>
+<ng-container *ngIf="createRecipeSuccess === false">
+  <div>
+    <span>Create failure! {{ createRecipeMessage }}</span>
+  </div>
+</ng-container>
+
+<div class="submit-btn-container">
+  <button mat-raised-button color="primary" type="button"
+    (click)="submitAll()"
+    [disabled]="!isFormValid()">
+    Post recipe!
+  </button>
+</div>
+
+<div class="recipe-form-container">
+  <form [formGroup]="ingredientsForm" class="ingredients-form">
+
+    <div formArrayName="ingredients">
+      <div *ngFor="let group of ingredients.controls; let i = index" [formGroupName]="i" class="ingredient-row">
+        
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Quantity</mat-label>
+          <input matInput type="text" formControlName="quantity" placeholder="e.g. 2 cups of" required />
+          <mat-error *ngIf="group.get('quantity')?.hasError('required') && group.get('quantity')?.touched">
+            Please enter quantity.
+          </mat-error>
+        </mat-form-field>
+
+        <div class="checkbox">
+          <span class="checkbox-label">Plural?</span>
+          <mat-checkbox formControlName="isPlural" [disabled]="group.get('notInList')?.value"></mat-checkbox>
+        </div>
+
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Ingredient</mat-label>
+          <input 
+            matInput 
+            type="text"  
+            formControlName="ingredient" 
+            placeholder="Select an ingredient" 
+            [matAutocomplete]="auto"
+            [matAutocompleteDisabled]="group.get('notInList')?.value"
+          />
+          <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption>
+            <mat-option *ngFor="let option of filteredIngredients$[i] | async" 
+                        [value]="group.get('plural')?.value ? option.plural : option.name">
+              {{ group.get('plural')?.value ? option.plural : option.name }}
+            </mat-option>
+          </mat-autocomplete>
+          <mat-error *ngIf="group.get('ingredient')?.touched && (
+                            group.get('ingredient')?.hasError('notExists') ||
+                            group.get('ingredient')?.hasError('minlength') ||
+                            group.get('ingredient')?.hasError('required')
+                            )">
+            Please select an ingredient <br> from the list.
+          </mat-error>
+        </mat-form-field>
+
+
+        <div class="checkbox">
+          <span class="checkbox-label">Not in the list</span>
+          <mat-checkbox formControlName="notInList"></mat-checkbox>
+        </div>
+
+        <button mat-icon-button color="warn" type="button" (click)="removeIngredient(i)">
+          <span class="remove-x">✖</span>
+        </button>
+      </div>
+    </div>
+    <div class="add-btn-container">
+      <button mat-stroked-button color="primary" type="button" (click)="addIngredient()">
+        + Add Ingredient
+      </button>
+    </div>
+  </form>
+
+  <form [formGroup]="detailsForm" class="details-form">
+    <mat-form-field appearance="outline" class="form-field form-field-no-bottom">
+      <mat-label>Title</mat-label>
+      <input matInput type="text" formControlName="title" placeholder="Recipe title" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="form-field form-field-no-bottom">
+      <mat-label>Description</mat-label>
+      <textarea matInput class="description-field" formControlName="description" placeholder="Short description"></textarea>
+    </mat-form-field>
+
+    <div class="divider">
+      <span>Steps</span>
+      <mat-divider></mat-divider>
+    </div>
+
+    <div formArrayName="steps" class="step-rows">
+      <div *ngFor="let step of steps.controls; let i = index" [formGroupName]="i" class="step-row">
+        <mat-form-field appearance="outline" class="form-field form-field-no-bottom">
+          <mat-label>Step {{i + 1}}</mat-label>
+          <input matInput type="text" formControlName="text" placeholder="Describe this step" />
+        </mat-form-field>
+        <button mat-icon-button color="warn" type="button" (click)="removeStep(i)">
+          <span class="remove-x">✖</span>
+        </button>
+      </div>
+      <button mat-stroked-button class="add-step-button" 
+        color="primary" 
+        type="button" 
+        (click)="addStep()"
+        [style.margin-top]="steps.length > 0 ? '1.5rem' : '0'"
+        >
+        + Add Step
+      </button>
+    </div>
+
+    <div class="divider">
+      <span>Time to prepare</span>
+      <mat-divider></mat-divider>
+    </div>
+
+    <div class="time-row">
+      <mat-form-field appearance="outline" class="form-field time-field form-field-no-bottom">
+        <mat-label>Minutes</mat-label>
+        <input matInput type="number" min="0" max="59" formControlName="minutes" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="form-field time-field form-field-no-bottom">
+        <mat-label>Hours</mat-label>
+        <input matInput type="number" min="0" max="23" formControlName="hours" />
+      </mat-form-field>
+      <mat-checkbox formControlName="longerThanOneDay">Longer than 1 day</mat-checkbox>
+    </div>
+
+    <mat-divider></mat-divider>
+    
+    <mat-form-field appearance="outline" class="form-field form-field-no-bottom">
+      <mat-label>Difficulty</mat-label>
+      <mat-select formControlName="difficulty">
+        <mat-option value="easy">Easy</mat-option>
+        <mat-option value="medium">Medium</mat-option>
+        <mat-option value="hard">Hard</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+
+  </form>
+</div>

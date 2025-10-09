@@ -15,7 +15,19 @@ namespace RecipeBay.Mappings
 				isDeleted = r.isDeleted,
 				Title = r.Title,
 				Description = r.Description,
-				Ingredients = r.IngredientEntries.Select(ie => ie.Ingredient.Name).ToList(),
+
+
+				Ingredients = r.IngredientEntries.Select(ie =>
+				{
+					return ie.IngredientAlias?.Name
+						?? ie.Ingredient?.Name
+						?? ie.CustomIngredientName
+						?? string.Empty;
+				}).ToList(),
+
+				// add debug if alias is null, ingredient is null, customname or is null
+
+
 				IngredientsAmounts = r.IngredientEntries.Select(ie => ie.Quantity).ToList(),
 				Steps = r.Steps,
 				TimeToPrepareMinutes = r.TimeToPrepareMinutes,
@@ -23,10 +35,32 @@ namespace RecipeBay.Mappings
 				TimeToPrepareLongerThan1Day = r.TimeToPrepareLongerThan1Day,
 				CreatedAt = r.CreatedAt,
 				AuthorId = r.AuthorId,
-				// Strip author navigation reference to avoid loops
 				Likes = r.Likes
 			};
 		}
+
+		// Recipe -> RecipeDtoFeed
+		public static RecipeDtoFeed ToDtoFeed(this Recipe r)
+		{
+			return new RecipeDtoFeed
+			{
+				Id = r.Id,
+				Title = r.Title,
+				Description = r.Description,
+				TimeToPrepareMinutes = r.TimeToPrepareMinutes,
+				TimeToPrepareHours = r.TimeToPrepareHours,
+				TimeToPrepareLongerThan1Day = r.TimeToPrepareLongerThan1Day,
+				Difficulty = r.DifficultyFrom1To3 switch
+				{
+					1 => "Easy",
+					2 => "Medium",
+					3 => "Hard",
+					_ => "Unknown"
+				},
+				Likes = r.Likes
+			};
+		}
+
 
 		// User -> UserProfileDtoDisplay
 		public static UserProfileDtoDisplay ToDtoDisplay(this User u)

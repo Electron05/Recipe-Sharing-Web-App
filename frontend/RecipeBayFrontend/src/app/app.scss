@@ -2,11 +2,48 @@ html, body, app-root {
   height: 100%;
   margin: 0;
 }
-body{
-  font-size: 62.5%;
-}
 
 .sidenav-container {
+  --sidenavPadding: 20px;
+
+  --HeaderTextSize: 3.2rem;
+
+  --OptionCount: 3;
+  --OptionMarginTop: 25px;
+  --OptionTextSize: 2.4rem;
+
+  --CreateRecipeHeight: 64px;
+  --CreateRecipeBorder: 1px;
+
+  --UserBarHeight: 72px;
+  --UserBarBorder: 1px;
+  --UserBarMarginTop: 20px;
+
+  --HeaderHeight: calc(
+    var(--HeaderTextSize)
+  );
+
+  --OptionsHeight: calc(
+    var(--OptionCount) * (var(--OptionTextSize) + var(--OptionMarginTop))
+  );
+
+  --UserBarTotalHeigh: calc(
+    var(--UserBarHeight) + var(--UserBarBorder) * 2 + var(--UserBarMarginTop)
+  );
+
+  --CreateRecipeTotalHeight: calc(
+    var(--CreateRecipeHeight) + var(--CreateRecipeBorder) * 2
+  );
+
+
+  --ContentHeight: calc(
+    var(--sidenavPadding) * 2 + var(--HeaderHeight) + var(--OptionsHeight) +
+    var(--CreateRecipeTotalHeight) + var(--UserBarTotalHeigh) 
+  );
+
+  --CreateRecipeMarginTop: max(0px, calc(100vh - var(--ContentHeight)));
+
+
   height: 100vh;
   width: 100vw;
   overflow: hidden;
@@ -18,56 +55,141 @@ body{
   flex-direction: column;
   background: #fafafa;
   border-right: 1px solid #ddd;
-  padding: 20px;
+  padding: var(--sidenavPadding);
   box-sizing: border-box;
   overflow-y: auto;
 }
 
 .sidenav h1 {
-  font-size: 2.4em;
+  font-size: var(--HeaderTextSize);
+  height: var(--HeaderTextSize);
+  line-height: 1;
+  display: block;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
-.sidenav a {
-  font-size: 1.6em;
-  text-decoration: none;
-  color: #333;
-  padding: 10px 0px;
+a:hover {
+  color: dodgerblue !important;
 }
-.sidenav a:hover {
-  color: dodgerblue;
+a {
+  text-decoration: none !important;
+  color: #333 !important;
 }
 
+.sidenav p > a {
+  font-size: var(--OptionTextSize);
+  height: var(--OptionTextSize);
+  line-height: 1;
+  margin-top: var(--OptionMarginTop);
+  margin-bottom: 0;
+  padding: 0;
+  display: block;
+}
 
 
-.sidenav .user-bar, .sidenav .guest-bar {
-  height: 72px;
-  margin-top: max(0px, calc(100vh - 300px));
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 8px;
+.create-recipe-bar, .sidenav .user-bar, .sidenav .guest-bar {
   align-items: center;
   justify-content: center;
   display: flex;
+  border-radius: 8px;
+  background: #fcfcfc;
+}
+
+.create-recipe-bar {
+  height: var(--CreateRecipeHeight);
+  border: var(--CreateRecipeBorder) solid rgba(0,0,0,0.06);
+  margin-top: var(--CreateRecipeMarginTop);
+}
+.create-recipe-bar > a {
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+.sidenav .user-bar, .sidenav .guest-bar {
+  height: var(--UserBarHeight);
+  margin-top: var(--UserBarMarginTop);
+  border: var(--UserBarBorder) solid rgba(0,0,0,0.06);
 }
 
 .sidenav .user-bar {
   gap: 8px;
-  background: #fcfcfc;
 }
 .sidenav .user-bar .profile-pic {
   width: 38px;
   height: 38px;
 }
+
 .sidenav .user-bar .username {
-  font-size: 1.1em;
+  font-size: 1.1rem;
   font-weight: 500;
   color: #333;
-  text-decoration: none;
 }
 
 
-.sidenav .guest-bar .username {
-  font-size: 2em;
+.sidenav .guest-bar .login {
+  font-size: 2rem;
   font-weight: 500;
-  color: dodgerblue;
-  text-decoration: none;
+  color: #333;
+}
+
+
+
+
+// MAIN PAGE
+
+.home-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40px;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.main-header {
+  font-size: 5rem;
+  font-weight: bold;
+  margin-bottom: 24px;
+  color: #333;
+}
+
+.main-title {
+  font-size: 2.5rem;
+  margin-bottom: 32px;
+  color: #555;
+}
+
+.recipe-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3.6rem;
+  font-weight: 500;
+  margin: 18px 0;
+  padding-bottom: 0.5rem;
+}
+
+.feed-button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.big-feed-button {
+  width: 80px;
+  height: 80px;
+  font-size: 3rem;
+  background: #1976d2;
+  color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.big-feed-button mat-icon {
+  font-size: 3rem;
 }

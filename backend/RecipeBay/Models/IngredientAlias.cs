@@ -16,6 +16,6 @@ public class IngredientAlias
 	[Required]
 	public required string Name { get; set; } // Alias or part name, e.g., "egg white"
 
-	public string? Plural { get; set; } // Plural form, e.g., "egg whites"
+	public required string Plural { get; set; } // Plural form, e.g., "egg whites"
 	
 }

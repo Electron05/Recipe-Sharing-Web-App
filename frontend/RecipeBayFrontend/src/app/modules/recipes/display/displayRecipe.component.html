@@ -1,0 +1,38 @@
+<div class="recipe-container">
+  <h1>{{ recipe?.title }}</h1>
+  <h2>{{ recipe?.description }}</h2>
+
+  <div class="recipe-details">
+    <p><strong>Created At:</strong> {{ recipe?.createdAt }}</p>
+    <p>
+      <strong>Time to Prepare:</strong>
+      <span *ngIf="recipe?.timeToPrepareLongerThan1Day">More than 1 day</span>
+      <span *ngIf="!recipe?.timeToPrepareLongerThan1Day">
+        {{ recipe?.timeToPrepareHours }} hour(s)
+        {{ recipe?.timeToPrepareMinutes }} minute(s)
+      </span>
+    </p>
+    <p><strong>Likes:</strong> {{ recipe?.likes }}</p>
+  </div>
+
+  <div class="ingredients-section" *ngIf="recipe as r">
+    <h3>Ingredients</h3>
+    <ul>
+      <li *ngFor="let ingredient of r.ingredients; let i = index">
+        {{ ingredient }}
+        <span *ngIf="r.ingredientsAmounts?.[i]">
+          - {{ r.ingredientsAmounts[i] }}
+        </span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="steps-section">
+    <h3>Steps</h3>
+    <ol>
+      <li *ngFor="let step of recipe?.steps">
+        {{ step }}
+      </li>
+    </ol>
+  </div>
+</div>

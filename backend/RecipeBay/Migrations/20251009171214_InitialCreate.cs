@@ -59,7 +59,7 @@ namespace RecipeBay.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IngredientId = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Plural = table.Column<string>(type: "text", nullable: true)
+                    Plural = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -85,6 +85,7 @@ namespace RecipeBay.Migrations
                     TimeToPrepareMinutes = table.Column<byte>(type: "smallint", nullable: false),
                     TimeToPrepareHours = table.Column<byte>(type: "smallint", nullable: false),
                     TimeToPrepareLongerThan1Day = table.Column<bool>(type: "boolean", nullable: false),
+                    DifficultyFrom1To3 = table.Column<byte>(type: "smallint", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     AuthorId = table.Column<int>(type: "integer", nullable: false),
                     Likes = table.Column<int>(type: "integer", nullable: false)
@@ -137,14 +138,21 @@ namespace RecipeBay.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     RecipeId = table.Column<int>(type: "integer", nullable: false),
-                    IngredientId = table.Column<int>(type: "integer", nullable: false),
+                    IngredientId = table.Column<int>(type: "integer", nullable: true),
+                    IngredientAliasId = table.Column<int>(type: "integer", nullable: true),
                     Quantity = table.Column<string>(type: "text", nullable: false),
                     IsPlural = table.Column<bool>(type: "boolean", nullable: false),
-                    SortOrder = table.Column<short>(type: "smallint", nullable: false)
+                    NotInList = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_IngredientEntries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_IngredientEntries_IngredientAliases_IngredientAliasId",
+                        column: x => x.IngredientAliasId,
+                        principalTable: "IngredientAliases",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_IngredientEntries_Ingredients_IngredientId",
                         column: x => x.IngredientId,
@@ -175,6 +183,11 @@ namespace RecipeBay.Migrations
                 column: "IngredientId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_IngredientEntries_IngredientAliasId",
+                table: "IngredientEntries",
+                column: "IngredientAliasId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_IngredientEntries_IngredientId",
                 table: "IngredientEntries",
                 column: "IngredientId");
@@ -202,16 +215,16 @@ namespace RecipeBay.Migrations
                 name: "Comments");
 
             migrationBuilder.DropTable(
-                name: "IngredientAliases");
-
-            migrationBuilder.DropTable(
                 name: "IngredientEntries");
 
             migrationBuilder.DropTable(
-                name: "Ingredients");
+                name: "IngredientAliases");
 
             migrationBuilder.DropTable(
                 name: "Recipes");
+
+            migrationBuilder.DropTable(
+                name: "Ingredients");
 
             migrationBuilder.DropTable(
                 name: "Users");

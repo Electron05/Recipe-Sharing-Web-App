@@ -49,7 +49,7 @@ namespace RecipeBay.Data
                 .HasForeignKey(c => c.RecipeId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Recipe -> RecipeIngredientEntry -> Ingredient -> IngredientAliasOrPart
+            // Recipe -> RecipeIngredientEntry -> Ingredient -> IngredientAlias
             modelBuilder.Entity<IngredientEntry>()
                 .HasOne(rie => rie.Recipe)
                 .WithMany(r => r.IngredientEntries)
@@ -60,6 +60,14 @@ namespace RecipeBay.Data
                 .HasOne(rie => rie.Ingredient)
                 .WithMany(i => i.RecipeEntries)
                 .HasForeignKey(rie => rie.IngredientId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<IngredientEntry>()
+                .HasOne(rie => rie.IngredientAlias)
+                .WithMany()
+                .HasForeignKey(rie => rie.IngredientAliasId)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<IngredientAlias>()

@@ -11,8 +11,8 @@ import { MatSelectModule } from '@angular/material/select';
 
 
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { Observable, of, combineLatest, startWith } from 'rxjs';
-import { debounceTime, switchMap, filter, map } from 'rxjs/operators';
+import { Observable, of, combineLatest, startWith, concatWith, switchAll } from 'rxjs';
+import { debounceTime, switchMap, filter, map, tap } from 'rxjs/operators';
 import { IngredientSuggestionsService, IngredientSuggestion } from '../../../services/ingredientSuggestions.service';
 
 import { RecipeDtoCreate, IngredientEntry } from '../../../types/creare-recipe';
@@ -40,8 +40,16 @@ export class CreateRecipeComponent {
   ingredientsForm: FormGroup;
   detailsForm: FormGroup;
   filteredIngredients$: Observable<IngredientSuggestion[]>[] = [];
+
+  autocompleteDisabled: number[] = []; 
+  // when selceting ingredient from autocomplete gets set to 2
+  // then validator sets to 1, then after adding for example 's' validator sets to 0 after getting new data
+  // autocomplete gets shown with new loaded data, this removes autocomplete "flash"
+
   createRecipeSuccess: boolean | null = null;
   createRecipeMessage: string = '';
+
+
 
   constructor(private fb: FormBuilder, 
               private ingredientService: IngredientSuggestionsService,
@@ -66,7 +74,7 @@ export class CreateRecipeComponent {
       quantity: ['', [Validators.required, Validators.minLength(1)]],
       ingredient: ['', [Validators.required, Validators.minLength(3)], this.ingredientValidator],
       isPlural: [false],
-      notInList: [false],
+      notInList: [true],
       aliasId: [-1],
       ingredientId: [-1],
       sortOrder: [-1]
@@ -80,6 +88,7 @@ export class CreateRecipeComponent {
   addIngredient() {
     this.ingredients.push(this.createIngredientRow());
     const index = this.ingredients.length - 1;
+    this.autocompleteDisabled.push(0);
 
     this.ingredients.at(index).get('sortOrder')?.setValue(index)
 
@@ -87,30 +96,26 @@ export class CreateRecipeComponent {
     ingredientControl?.valueChanges.subscribe(ingredient => {
       this.onIngredientChange(index);
     });
-    
-    const pluralControl = this.ingredients.at(index).get('isPlural');
-    pluralControl?.valueChanges.subscribe(isPlural => {
-      this.onPluralChange(index, isPlural);
-    });
 
-    const notInListControl = this.ingredients.at(index).get('notInList');
-    notInListControl?.valueChanges.subscribe(isPlural => {
-      ingredientControl?.updateValueAndValidity();
-    });
-
-    this.filteredIngredients$[index] = combineLatest([
-        ingredientControl!.valueChanges,
-        pluralControl!.valueChanges.pipe(startWith(pluralControl!.value))
-      ]).pipe(
+    this.filteredIngredients$[index] = ingredientControl!.valueChanges.pipe(
+      startWith(''),
       debounceTime(300),
-      switchMap(([name, isPlural]: [string, boolean]) =>
-        this.ingredientService.search(name, isPlural)
-      )
+      switchMap((name: string) => {
+        if (!name || name.length < 3) return of([]);
+
+        return this.ingredientService.search(name).pipe(
+          tap(results => {
+            if(this.autocompleteDisabled[index]>0) 
+              this.autocompleteDisabled[index]--;
+          })
+        );
+      })
     );
   }
 
   removeIngredient(index: number) {
     this.ingredients.removeAt(index);
+    this.autocompleteDisabled.splice(index, 1);
   }
 
   get steps(): FormArray {
@@ -137,62 +142,37 @@ export class CreateRecipeComponent {
     const parent = control.parent;
     if (!parent) return of(null);
 
-    // If user checked not in the list that means he wants to enter his custom ingredient
-    const notInList = parent.get('notInList')?.value
-    if (notInList == null || notInList === true) return of(null); //return no errors
-
     const name = control.value;
-    const isPlural = parent.get('isPlural')?.value;
 
     if (!name || name.length < 3) return of(null);
 
     // Provide ingredient id and  optionally alias id if user picked alias, if both ids are -1 set error
-    return this.ingredientService.IngredientBasicIdOrAliasIds(name, isPlural).pipe(
+    return this.ingredientService.IngredientBasicIdOrAliasIds(name).pipe(
       map(res => {
         if (res[0] === -1 && res[1] === -1) {
+          parent.get('notInList')?.setValue(true);
+          parent.get('isPlural')?.setValue(false);
           return { notExists: true };
         } else {
           parent.get('ingredientId')?.setValue(res[0]);
           parent.get('aliasId')?.setValue(res[1]);
+          parent.get('isPlural')?.setValue(res[2]==-1) // yeah sorry for magic number, see IngredientsController
+          parent.get('notInList')?.setValue(false);
           return null;
         }
       })
     );
   };
 
-  onPluralChange(index: number, newIsPlural: boolean) {
-    // if form was incorrect only call ingredient async validator
-    // it it was correct automatically correct ingredient to plural form or singular form
-    
-    const ingredientControl = this.ingredients.at(index).get('ingredient');
-    if (!ingredientControl) return;
-
-    if (ingredientControl.invalid) {
-      ingredientControl.updateValueAndValidity();
-      return;
-    }
-    var currentIngredientForm = this.ingredients.at(index).get('ingredient')?.value;
-    this.ingredientService.toSingularOrPlural(currentIngredientForm, !newIsPlural)
-      .subscribe(newForm => {
-        if (newForm) {
-          this.ingredients.at(index).get('ingredient')?.setValue(newForm);
-        }
-      });
-    }
+  onIngredientSelected(event: any, index: number) {
+    this.autocompleteDisabled[index] = 2;
+    console.debug("DEBUG: Autocomplete disabled");
+  }
 
   isFormValid(): boolean {
     if (this.ingredients.length === 0 || this.ingredientsForm.invalid) return false;
     if (this.steps.length === 0 || this.detailsForm.invalid) return false;
 
-    
-    for (let i = 0; i < this.ingredients.length; i++) {
-      const ingredientRow = this.ingredients.at(i);
-      if (
-        !ingredientRow.get('notInList')?.value &&
-        ingredientRow.get('ingredientId')?.value === -1
-      ) return false;
-
-    }
     return true;
   }
 

@@ -12,16 +12,12 @@ export interface IngredientSuggestion {
 export class IngredientSuggestionsService {
   constructor(private http: HttpClient) {}
 
-  search(name: string, isPlural : boolean) : Observable<IngredientSuggestion[]> {
+  search(name: string) : Observable<IngredientSuggestion[]> {
     if(name.length < 3) return of([]); //new Observable<IngredientSuggestion[]>()
-    return this.http.get<IngredientSuggestion[]>(`${environment.apiUrl}/Ingredients/search?name=${name}&isPlural=${isPlural}`);
+    return this.http.get<IngredientSuggestion[]>(`${environment.apiUrl}/Ingredients/search?name=${name}`);
   }
 
-  IngredientBasicIdOrAliasIds(name : string, isPlural : boolean) : Observable<number[]>{
-    return this.http.get<number[]>(`${environment.apiUrl}/Ingredients/exists?name=${name}&isPlural=${isPlural}`);
-  }
-
-  toSingularOrPlural(name : string, isPlural : boolean) : Observable<string>{
-    return this.http.get(`${environment.apiUrl}/Ingredients/toSingularOrPlural?name=${name}&isPlural=${isPlural}`, { responseType: 'text'});
+  IngredientBasicIdOrAliasIds(name : string) : Observable<number[]>{
+    return this.http.get<number[]>(`${environment.apiUrl}/Ingredients/exists?name=${name}`);
   }
 }

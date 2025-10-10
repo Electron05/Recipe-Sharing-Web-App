@@ -26,7 +26,6 @@ namespace RecipeBay.Controllers
 		[HttpGet("search")]
 		public async Task<ActionResult<IEnumerable<IngredientSuggestionDto>>> SearchIngredients(
 			[FromQuery] string name,
-			[FromQuery] bool isPlural,
 			[FromQuery] int limit = 10)
 		{
 			if (string.IsNullOrWhiteSpace(name))
@@ -35,12 +34,12 @@ namespace RecipeBay.Controllers
 			name = name.ToLower();
 
 			var ingredients = await _context.Ingredients
-				.Where(i => (isPlural ? i.Plural.ToLower() : i.Name.ToLower()).Contains(name))
+				.Where(i => i.Name.ToLower().Contains(name))
 				.Select(i => i.ToSuggestionDto())
 				.ToListAsync();
 
 			var aliases = await _context.IngredientAliases
-				.Where(a => (isPlural ? a.Plural.ToLower() : a.Name.ToLower()).Contains(name))
+				.Where(a => a.Name.ToLower().Contains(name))
 				.Select(a => a.ToSuggestionDto())
 				.ToListAsync();
 
@@ -60,68 +59,74 @@ namespace RecipeBay.Controllers
 
 		[HttpGet("exists")]
 		public async Task<ActionResult<int[]>> IngredientBasicIdOrAliasIds(
-			[FromQuery] string name,
-			[FromQuery] bool isPlural)
+			[FromQuery] string name)
 		{
 
-			int[] result = { -1, -1 };
+			int[] result = { -1, -1, -1 };
+			// result[2]: 1 = singular -1 = plural
+
 			// If result [1] != -1: 
-			// result[1] = aliasId 
-			// result[0] = parentIngredientId
+			// 	result[1] = aliasId 
+			// 	result[0] = aliasParentIngredientId
 			// else:
-			// result[0] = ingredientId
+			// 	result[0] = ingredientId
 
 			if (string.IsNullOrWhiteSpace(name))
 				return Ok(result);
 
 			var nameLower = name.ToLower();
 
-			var alias = await _context.IngredientAliases
-				.Where(a => (isPlural ? a.Plural.ToLower() : a.Name.ToLower()) == nameLower)
+			// Check if name matches any plural in aliases
+			var aliasPlural = await _context.IngredientAliases
+				.Where(a => a.Plural.ToLower() == nameLower)
 				.FirstOrDefaultAsync();
 
-			if (alias != null)
+			if (aliasPlural != null)
 			{
-				result[1] = alias.Id;
-				result[0] = alias.IngredientId;
+				result[1] = aliasPlural.Id;
+				result[0] = aliasPlural.IngredientId;
+				result[2] = -1; // plural
 				return Ok(result);
 			}
 
-			var ingredientId = await _context.Ingredients
-				.Where(i => (isPlural ? i.Plural.ToLower() : i.Name.ToLower()) == nameLower)
-				.Select(i => i.Id)
+			// Check if name matches any singular in aliases
+			var aliasSingular = await _context.IngredientAliases
+				.Where(a => a.Name.ToLower() == nameLower)
 				.FirstOrDefaultAsync();
 
-			if (ingredientId != 0)
-				result[0] = ingredientId;
+			if (aliasSingular != null)
+			{
+				result[1] = aliasSingular.Id;
+				result[0] = aliasSingular.IngredientId;
+				result[2] = 1; // singular
+				return Ok(result);
+			}
+
+			// Check if name matches any plural in ingredients
+			var ingredientPlural = await _context.Ingredients
+				.Where(i => i.Plural.ToLower() == nameLower)
+				.FirstOrDefaultAsync();
+
+			if (ingredientPlural != null)
+			{
+				result[0] = ingredientPlural.Id;
+				result[2] = -1; // plural
+				return Ok(result);
+			}
+
+			// Check if name matches any singular in ingredients
+			var ingredientSingular = await _context.Ingredients
+				.Where(i => i.Name.ToLower() == nameLower)
+				.FirstOrDefaultAsync();
+
+			if (ingredientSingular != null)
+			{
+				result[0] = ingredientSingular.Id;
+				result[2] = 1; // singular
+				return Ok(result);
+			}
 
 			return Ok(result);
 		}
-
-		[HttpGet("toSingularOrPlural")]
-		public async Task<ActionResult<string>> ToSingularOrPlural(
-			[FromQuery] string name,
-			[FromQuery] bool isPlural)
-		{
-			if (string.IsNullOrWhiteSpace(name))
-				return BadRequest("Changing countable form failed: empty string");
-
-			var nameLower = name.ToLower();
-
-			var ingredientForm = await _context.Ingredients
-				.Where(i => (isPlural ? i.Plural.ToLower() : i.Name.ToLower()) == nameLower)
-				.Select(i => isPlural ? i.Name : i.Plural)
-				.FirstOrDefaultAsync();
-			if(ingredientForm?.Length>0)
-				return Ok(ingredientForm);
-			var aliasForm = await _context.IngredientAliases
-				.Where(a => (isPlural ? a.Plural.ToLower() : a.Name.ToLower()) == nameLower)
-				.Select(a => isPlural ? a.Name : a.Plural)
-				.FirstOrDefaultAsync();
-			if(aliasForm?.Length >0)
-				return Ok(aliasForm);
-			return NotFound();
-		}
-		
 	}
 }

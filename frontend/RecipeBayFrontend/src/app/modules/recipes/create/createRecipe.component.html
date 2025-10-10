@@ -33,11 +33,6 @@
           </mat-error>
         </mat-form-field>
 
-        <div class="checkbox">
-          <span class="checkbox-label">Plural?</span>
-          <mat-checkbox formControlName="isPlural" [disabled]="group.get('notInList')?.value"></mat-checkbox>
-        </div>
-
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>Ingredient</mat-label>
           <input 
@@ -46,12 +41,12 @@
             formControlName="ingredient" 
             placeholder="Select an ingredient" 
             [matAutocomplete]="auto"
-            [matAutocompleteDisabled]="group.get('notInList')?.value"
+            [matAutocompleteDisabled]="autocompleteDisabled[i] != 0"
           />
-          <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption>
+          <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="onIngredientSelected($event, i)">
             <mat-option *ngFor="let option of filteredIngredients$[i] | async" 
-                        [value]="group.get('plural')?.value ? option.plural : option.name">
-              {{ group.get('plural')?.value ? option.plural : option.name }}
+                        [value]="option.name">
+              {{ option.name }}
             </mat-option>
           </mat-autocomplete>
           <mat-error *ngIf="group.get('ingredient')?.touched && (
@@ -62,12 +57,6 @@
             Please select an ingredient <br> from the list.
           </mat-error>
         </mat-form-field>
-
-
-        <div class="checkbox">
-          <span class="checkbox-label">Not in the list</span>
-          <mat-checkbox formControlName="notInList"></mat-checkbox>
-        </div>
 
         <button mat-icon-button color="warn" type="button" (click)="removeIngredient(i)">
           <span class="remove-x">✖</span>

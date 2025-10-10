@@ -9,17 +9,23 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data # persist DB data
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
       context: ./backend/RecipeBay
     container_name: recipebay-backend
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Host=db;Database=recipebay;Username=postgres;Password=${DB_PASSWORD}"
+      ConnectionStrings__DefaultConnection: "Host=db;Database=recipebay;Username=postgres;Password=${POSTGRES_PASSWORD}"
       ASPNETCORE_URLS: "http://+:5272"
       JWT_KEY: "${JWT_KEY}"
     ports:

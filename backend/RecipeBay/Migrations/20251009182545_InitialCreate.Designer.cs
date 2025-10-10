@@ -13,7 +13,7 @@ using RecipeBay.Data;
 namespace RecipeBay.Migrations
 {
     [DbContext(typeof(RecipeBayContext))]
-    [Migration("20251009171214_InitialCreate")]
+    [Migration("20251009182545_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

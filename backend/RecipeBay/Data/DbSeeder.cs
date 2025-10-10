@@ -84,7 +84,7 @@ public static class IngredientSeeder
                 .ToList();
             ingredientsByLetter[letter] = ingredients;
         }
-        int maxIngredientsGroupLength = ingredientsByLetter.Values.Max(l => l.Count);
+        int maxIngredientsGroupLength = 5;
         for (int groupLength = 1; groupLength <= maxIngredientsGroupLength; groupLength++)
         {
             foreach (var ingredientGroup in ingredientsByLetter)
@@ -120,5 +120,46 @@ public static class IngredientSeeder
             }
         }
         context.SaveChanges();
+    }
+
+    public static void SeedUser(RecipeBayContext context)
+    {
+        // Example users
+        var users = new List<User>
+        {
+            new User
+            {
+                Username = "jak",
+                Email = "jc@wp.pl",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("123456"),
+            }
+        };
+
+        foreach (var user in users)
+        {
+            if (!context.Users.Any(u => u.Username == user.Username))
+            {
+                context.Users.Add(user);
+            }
+        }
+        context.SaveChanges();
+    }
+    public static void SeedAll(RecipeBayContext context, string ingredientFilePath)
+    {
+        using var transaction = context.Database.BeginTransaction();
+        try
+        {
+            SeedIngredients(context, ingredientFilePath);
+            SeedUser(context);
+            SeedRecipes(context);
+
+            transaction.Commit();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Seeding error: {ex.Message}\n{ex.StackTrace}");
+            transaction.Rollback();
+            throw;
+        }
     }
 }

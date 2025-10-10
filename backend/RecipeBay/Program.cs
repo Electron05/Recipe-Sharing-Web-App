@@ -10,6 +10,7 @@ const bool UseLocalEnvironment = false;
 if(UseLocalEnvironment)
     DotNetEnv.Env.Load("../../.env");
 
+const bool SeedUserOnStartup = false;
 const bool SeedIngredientsOnStartup = false;
 const bool SeedRecipesOnStartup = false;
 const bool ApplyMigrationsOnStartup = false;
@@ -26,8 +27,10 @@ AddCORS(builder);
 var app = builder.Build();
 app.UseCors("AllowAngular");
 
-if(ApplyMigrationsOnStartup)
+if (ApplyMigrationsOnStartup)
     ApplyMigrations(app);
+if (SeedUserOnStartup)
+    SeedUser(app);
 if(SeedIngredientsOnStartup)
     SeedIngredientsDatabase(app);
 if (SeedRecipesOnStartup)
@@ -145,7 +148,12 @@ static void ApplyMigrations(WebApplication app)
         Console.WriteLine("DB is up to date with latest migration.");
     }
 }
-
+static void SeedUser(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<RecipeBayContext>();
+    IngredientSeeder.SeedUser(db);
+}
 static void SeedIngredientsDatabase(WebApplication app)
 {
     using var scope = app.Services.CreateScope();
@@ -159,6 +167,7 @@ static void SeedRecipesDatabase(WebApplication app)
     var db = scope.ServiceProvider.GetRequiredService<RecipeBayContext>();
     IngredientSeeder.SeedRecipes(db);
 }
+
 
 static void ConfigureMiddleware(WebApplication app)
 {

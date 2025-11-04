@@ -44,7 +44,9 @@ namespace RecipeBay.Migrations
                     Username = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Bio = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    ProfilePictureUrl = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -68,6 +70,30 @@ namespace RecipeBay.Migrations
                         name: "FK_IngredientAliases_Ingredients_IngredientId",
                         column: x => x.IngredientId,
                         principalTable: "Ingredients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Followers",
+                columns: table => new
+                {
+                    FollowerId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Followers", x => new { x.FollowerId, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_Followers_Users_FollowerId",
+                        column: x => x.FollowerId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Followers_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -99,6 +125,30 @@ namespace RecipeBay.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Bookmarks",
+                columns: table => new
+                {
+                    BookmarkedById = table.Column<int>(type: "integer", nullable: false),
+                    BookmarkedRecipesId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bookmarks", x => new { x.BookmarkedById, x.BookmarkedRecipesId });
+                    table.ForeignKey(
+                        name: "FK_Bookmarks_Recipes_BookmarkedRecipesId",
+                        column: x => x.BookmarkedRecipesId,
+                        principalTable: "Recipes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Bookmarks_Users_BookmarkedById",
+                        column: x => x.BookmarkedById,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -167,6 +217,35 @@ namespace RecipeBay.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "MadeRecipes",
+                columns: table => new
+                {
+                    MadeById = table.Column<int>(type: "integer", nullable: false),
+                    MadeRecipesId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MadeRecipes", x => new { x.MadeById, x.MadeRecipesId });
+                    table.ForeignKey(
+                        name: "FK_MadeRecipes_Recipes_MadeRecipesId",
+                        column: x => x.MadeRecipesId,
+                        principalTable: "Recipes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MadeRecipes_Users_MadeById",
+                        column: x => x.MadeById,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookmarks_BookmarkedRecipesId",
+                table: "Bookmarks",
+                column: "BookmarkedRecipesId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_AuthorId",
                 table: "Comments",
@@ -176,6 +255,11 @@ namespace RecipeBay.Migrations
                 name: "IX_Comments_RecipeId",
                 table: "Comments",
                 column: "RecipeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Followers_UserId",
+                table: "Followers",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IngredientAliases_IngredientId",
@@ -203,6 +287,11 @@ namespace RecipeBay.Migrations
                 column: "ParentIngredientId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MadeRecipes_MadeRecipesId",
+                table: "MadeRecipes",
+                column: "MadeRecipesId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Recipes_AuthorId",
                 table: "Recipes",
                 column: "AuthorId");
@@ -212,10 +301,19 @@ namespace RecipeBay.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Bookmarks");
+
+            migrationBuilder.DropTable(
                 name: "Comments");
 
             migrationBuilder.DropTable(
+                name: "Followers");
+
+            migrationBuilder.DropTable(
                 name: "IngredientEntries");
+
+            migrationBuilder.DropTable(
+                name: "MadeRecipes");
 
             migrationBuilder.DropTable(
                 name: "IngredientAliases");

@@ -50,6 +50,13 @@ export class App implements OnInit {
     });
   }
 
+  get currentUserId(): number | null {
+    const decoded = this.authService.getDecodedToken();
+    const sub = decoded?.sub ?? decoded?.Sub ?? decoded?.userId ?? null;
+    if (!sub) return null;
+    return typeof sub === 'string' ? parseInt(sub, 10) : sub;
+  }
+
   ngOnInit() {
     if (this.isHome) {
       this.loadInitialFeed();

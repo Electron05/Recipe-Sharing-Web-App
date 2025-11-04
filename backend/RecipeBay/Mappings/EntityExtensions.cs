@@ -70,9 +70,15 @@ namespace RecipeBay.Mappings
 				Id = u.Id,
 				isDeleted = u.isDeleted,
 				Username = u.Username,
+
+				Bio = u.Bio,
+
+				ProfilePictureUrl = u.ProfilePictureUrl,
 				// Strip email and pass hash
 				CreatedAt = u.CreatedAt,
-				Recipes = u.Recipes?.Select(r => r.ToDtoDisplay()).ToList() ?? new List<RecipeDtoDisplay>()
+				Recipes = u.Recipes?.Select(r => r.ToDtoFeed()).ToList() ?? new List<RecipeDtoFeed>(),
+				FollowersCount = u.Followers.Count,
+				FollowingCount = u.Following.Count
 			};
 		}
 

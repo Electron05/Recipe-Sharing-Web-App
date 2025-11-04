@@ -23,6 +23,21 @@ namespace RecipeBay.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Followers", b =>
+                {
+                    b.Property<int>("FollowerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("FollowerId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Followers");
+                });
+
             modelBuilder.Entity("Ingredient", b =>
                 {
                     b.Property<int>("Id")
@@ -210,6 +225,10 @@ namespace RecipeBay.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Bio")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -222,6 +241,10 @@ namespace RecipeBay.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ProfilePictureUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -233,6 +256,51 @@ namespace RecipeBay.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("RecipeUser", b =>
+                {
+                    b.Property<int>("BookmarkedById")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("BookmarkedRecipesId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("BookmarkedById", "BookmarkedRecipesId");
+
+                    b.HasIndex("BookmarkedRecipesId");
+
+                    b.ToTable("Bookmarks", (string)null);
+                });
+
+            modelBuilder.Entity("RecipeUser1", b =>
+                {
+                    b.Property<int>("MadeById")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MadeRecipesId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("MadeById", "MadeRecipesId");
+
+                    b.HasIndex("MadeRecipesId");
+
+                    b.ToTable("MadeRecipes", (string)null);
+                });
+
+            modelBuilder.Entity("Followers", b =>
+                {
+                    b.HasOne("RecipeBay.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("FollowerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RecipeBay.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Ingredient", b =>
@@ -309,6 +377,36 @@ namespace RecipeBay.Migrations
                         .IsRequired();
 
                     b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("RecipeUser", b =>
+                {
+                    b.HasOne("RecipeBay.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("BookmarkedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RecipeBay.Models.Recipe", null)
+                        .WithMany()
+                        .HasForeignKey("BookmarkedRecipesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RecipeUser1", b =>
+                {
+                    b.HasOne("RecipeBay.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("MadeById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RecipeBay.Models.Recipe", null)
+                        .WithMany()
+                        .HasForeignKey("MadeRecipesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Ingredient", b =>

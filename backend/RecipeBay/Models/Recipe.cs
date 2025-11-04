@@ -44,5 +44,8 @@ namespace RecipeBay.Models
         public List<Comment> Comments { get; set; } = new();
 
         public int Likes { get; set; } = 0;
+
+        public List<User> BookmarkedBy { get; set; } = new();
+        public List<User> MadeBy { get; set; } = new();
     }
 }

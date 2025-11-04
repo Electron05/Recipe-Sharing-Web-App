@@ -11,7 +11,7 @@
 
     <div class="user-bar" *ngIf="isAuthenticated; else guestBar">
       <img class="profile-pic" src="https://ui-avatars.com/api/?name=User" alt="Profile" />
-      <span class="username">{{ 'UserName' }}</span>
+      <a class="username" *ngIf="currentUserId" [routerLink]="['/users', currentUserId]">{{ 'UserName' }}</a>
       <button mat-button color="warn" (click)="clickLogout()">Logout</button>
     </div>
     <ng-template #guestBar>

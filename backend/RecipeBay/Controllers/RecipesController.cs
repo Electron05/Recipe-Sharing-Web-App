@@ -70,6 +70,58 @@ namespace RecipeBay.Controllers
             return Ok(recipe);
         }
 
+            [HttpPost("{id}/bookmark")]
+            public async Task<IActionResult> Bookmark(int id)
+            {
+                // get current user id from JWT sub claim
+                var userIdString = HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+                if (userIdString == null) return Unauthorized("User ID claim not found.");
+                if (!int.TryParse(userIdString, out int currentUserId)) return Unauthorized("Invalid user id claim.");
+
+                var user = await _context.Users.Include(u => u.BookmarkedRecipes).FirstOrDefaultAsync(u => u.Id == currentUserId);
+                var recipe = await _context.Recipes.FindAsync(id);
+                if (user == null || recipe == null) return NotFound();
+                if (user.BookmarkedRecipes.Any(r => r.Id == id)) return BadRequest("Already bookmarked");
+                user.BookmarkedRecipes.Add(recipe);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+
+            [HttpPost("{id}/unbookmark")]
+            public async Task<IActionResult> Unbookmark(int id)
+            {
+                var userIdString = HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+                if (userIdString == null) return Unauthorized("User ID claim not found.");
+                if (!int.TryParse(userIdString, out int currentUserId)) return Unauthorized("Invalid user id claim.");
+
+                var user = await _context.Users.Include(u => u.BookmarkedRecipes).FirstOrDefaultAsync(u => u.Id == currentUserId);
+                if (user == null) return NotFound();
+                var toRemove = user.BookmarkedRecipes.FirstOrDefault(r => r.Id == id);
+                if (toRemove == null) return NotFound();
+                user.BookmarkedRecipes.Remove(toRemove);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+
+            [HttpPost("{id}/made")]
+            public async Task<IActionResult> MarkMade(int id, [FromBody] object body)
+            {
+                // body may contain { pictureUrl: string }
+                var userIdString = HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+                if (userIdString == null) return Unauthorized("User ID claim not found.");
+                if (!int.TryParse(userIdString, out int currentUserId)) return Unauthorized("Invalid user id claim.");
+
+                var user = await _context.Users.Include(u => u.MadeRecipes).FirstOrDefaultAsync(u => u.Id == currentUserId);
+                var recipe = await _context.Recipes.FindAsync(id);
+                if (user == null || recipe == null) return NotFound();
+                if (!user.MadeRecipes.Any(r => r.Id == id))
+                {
+                    user.MadeRecipes.Add(recipe);
+                    await _context.SaveChangesAsync();
+                }
+                return Ok();
+            }
+
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<RecipeDtoCreate>> CreateRecipe(RecipeDtoCreate dto)

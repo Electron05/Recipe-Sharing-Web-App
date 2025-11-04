@@ -1,0 +1,100 @@
+// Base layout for the user page
+.user-page-container {
+  max-width: 90rem; // 900px (1rem = 10px)
+  margin: 3rem auto;
+  padding: 2.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  background: var(--mat-sys-surface-container-high, #ffffff);
+  border-radius: 1.2rem;
+  box-shadow: 0 0.4rem 1.2rem rgba(16,24,40,0.06);
+}
+
+/* Header / avatar */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+}
+
+.avatar {
+  width: 12rem;
+  height: 12rem;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0.4rem 0.8rem rgba(16,24,40,0.08);
+  border: 0.2rem solid rgba(0,0,0,0.04);
+}
+
+.meta h1 {
+  font-size: 3.2rem;
+  margin: 0 0 0.4rem 0;
+  line-height: 1;
+}
+
+.meta .created {
+  margin: 0;
+  font-size: 1.4rem;
+  color: rgba(0,0,0,0.56);
+}
+
+.meta .counts {
+  margin: 0.4rem 0 0 0;
+  font-size: 1.4rem;
+  color: rgba(0,0,0,0.7);
+  font-weight: 500;
+}
+
+.actions { margin-left: auto; }
+.actions button { font-size: 1.4rem; }
+
+/* Bio */
+.bio {
+  width: 100%;
+}
+
+.bio p {
+  font-size: 1.6rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.bio .placeholder {
+  font-style: italic;
+  color: rgba(0,0,0,0.6);
+}
+
+.bio-field { width: 100%; }
+.bio-field textarea { font-size: 1.6rem; padding: 1rem; }
+.edit-actions { display:flex; gap:1rem; margin-top:0.8rem; }
+
+/* Recipes list */
+.recipes { width: 100%; }
+.recipes h2 
+{ 
+  font-size: 3rem; 
+  margin-bottom: 0.8rem; 
+  padding-bottom: 1rem;
+}
+.recipes .recipe-title { font-size: 1.6rem; margin: 0.6rem 0; }
+
+.recipe-row{
+  padding-bottom: 1.2rem;
+}
+
+.recipes a { 
+  color: var(--mat-sys-primary, #0066cc); 
+  text-decoration: none; 
+  font-size: 2rem; 
+}
+.recipes a:hover { text-decoration: underline; }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .user-page-container { padding: 1.2rem; margin: 1.6rem; }
+  .avatar { width: 8rem; height: 8rem; }
+  .meta h1 { font-size: 2.2rem; }
+  .meta .created { font-size: 1.2rem; }
+  .actions button { font-size: 1.2rem; }
+}

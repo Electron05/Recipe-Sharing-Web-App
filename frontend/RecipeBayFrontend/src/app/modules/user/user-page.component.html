@@ -1,0 +1,47 @@
+<div class="user-page-container" *ngIf="profile">
+  <div class="header">
+    <img *ngIf="profile.profilePictureUrl" [src]="profile.profilePictureUrl" class="avatar" alt="Profile picture">
+    <div class="meta">
+      <h1>{{ profile.username }}</h1>
+      <p class="created">Joined: {{ profile.createdAt | date }}</p>
+      <p class="counts">Followers: {{ profile.followersCount }} | Following: {{ profile.followingCount }}</p>
+    </div>
+    <div class="actions" *ngIf="isOwnProfile">
+      <button mat-stroked-button color="primary" *ngIf="!editing" (click)="startEdit()">Edit Bio</button>
+    </div>
+    <div class="actions" *ngIf="!isOwnProfile">
+      <button mat-flat-button color="primary" *ngIf="!profile?.isFollowing" (click)="follow()">Follow</button>
+      <button mat-stroked-button color="warn" *ngIf="profile?.isFollowing" (click)="unfollow()">Unfollow</button>
+    </div>
+  </div>
+
+  <section class="bio">
+    <ng-container *ngIf="!editing">
+      <p *ngIf="profile.bio; else noBio">{{ profile.bio }}</p>
+      <ng-template #noBio><p class="placeholder">No bio yet.</p></ng-template>
+    </ng-container>
+
+    <ng-container *ngIf="editing">
+      <mat-form-field appearance="fill" class="bio-field">
+        <textarea matInput rows="5" [value]="editBio" (input)="editBio = $any($event.target).value" maxlength="500"></textarea>
+        <mat-hint align="end">{{ editBio.length }}/500</mat-hint>
+      </mat-form-field>
+      <div class="edit-actions">
+        <button mat-flat-button color="primary" (click)="saveBio()">Save</button>
+        <button mat-button (click)="cancelEdit()">Cancel</button>
+      </div>
+    </ng-container>
+  </section>
+
+  <section class="recipes">
+    <h2>Recipes</h2>
+    <div *ngIf="profile.recipes?.length; else noRecipes">
+      <div class="recipe-row" *ngFor="let r of profile.recipes">
+        <a [routerLink]="['/recipe', r.id]">{{ r.title }}</a>
+      </div>
+    </div>
+    <ng-template #noRecipes><p>No recipes yet.</p></ng-template>
+  </section>
+</div>
+
+<div *ngIf="!profile">Loading...</div>

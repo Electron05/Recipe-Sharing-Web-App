@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RecipeBay.Models;
+using System.Collections.Generic;
 
 //https://learn.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-9.0&tabs=visual-studio-code
 
@@ -81,7 +82,29 @@ namespace RecipeBay.Data
                 .HasOne(i => i.IsPartOf)
                 .WithMany()
                 .HasForeignKey(i => i.ParentIngredientId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent deletion if it has parts
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Self-referencing many-to-many for followers
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Followers)
+                .WithMany(u => u.Following)
+                .UsingEntity<Dictionary<string, object>>(
+                    "Followers",
+                    j => j.HasOne<User>().WithMany().HasForeignKey("FollowerId").OnDelete(DeleteBehavior.Cascade),
+                    j => j.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.Cascade)
+                );
+
+            // Many-to-many: User <-> Recipe for bookmarks
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.BookmarkedRecipes)
+                .WithMany(r => r.BookmarkedBy)
+                .UsingEntity(j => j.ToTable("Bookmarks"));
+
+            // Many-to-many: User <-> Recipe for "made" relation
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.MadeRecipes)
+                .WithMany(r => r.MadeBy)
+                .UsingEntity(j => j.ToTable("MadeRecipes"));
         }
 
 	}

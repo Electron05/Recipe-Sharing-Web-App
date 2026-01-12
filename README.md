@@ -76,6 +76,14 @@ docker-compose up --build
 - **Time Management**: Balancing a hard semester with side projects requires realistic scoping.
 - Overall, this was a valuable introduction to full-stack development, JWT auth, Docker, and CI/CD, but it highlighted the importance of focus and planning.
 
+## Screenshots
+
+<img width="844" height="635" alt="Zrzut ekranu 2026-01-12 204805" src="https://github.com/user-attachments/assets/2ce97536-4d11-4c6a-ada4-807bfd790c24" />
+<img width="1466" height="646" alt="Zrzut ekranu 2026-01-12 204325" src="https://github.com/user-attachments/assets/3168a58f-0d7b-40ca-b449-874874561dc9" />
+<img width="1240" height="631" alt="Zrzut ekranu 2026-01-12 204733" src="https://github.com/user-attachments/assets/e7b85564-6026-420d-97e2-4fbd796b8f43" />
+<img width="1919" height="973" alt="Zrzut ekranu 2026-01-12 210900" src="https://github.com/user-attachments/assets/a66f776d-96a3-4f99-aea3-f7f2037ec0be" />
+
+
 ## Contributing
 
 This project is archived and no longer maintained. Feel free to fork and experiment!
